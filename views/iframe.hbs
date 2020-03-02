@@ -1,0 +1,32 @@
+<h1><a href="/">{{title}}</a></h1>
+<script>
+  function doText() {
+    document.getElementById('tripleXform').style.display = "none";
+    document.getElementById('textXform').style.display = "block";
+    document.getElementById('txb').classList.remove('btn-secondary');
+    document.getElementById('txb').classList.add('btn-primary');
+    document.getElementById('ttb').classList.remove('btn-primary');
+    document.getElementById('ttb').classList.add('btn-secondary');
+  }
+  function doTriple() {
+    document.getElementById('textXform').style.display = "none";
+    document.getElementById('tripleXform').style.display = "block";
+    document.getElementById('ttb').classList.remove('btn-secondary');
+    document.getElementById('ttb').classList.add('btn-primary');
+    document.getElementById('txb').classList.remove('btn-primary');
+    document.getElementById('txb').classList.add('btn-secondary');
+  }
+</script>
+<button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
+<button type="button" id="ttb" class="btn btn-secondary" onclick="doTriple()">Triple Form</button>
+    <div id="textXform">
+      {{> air_form}}
+    </div>
+    <div id="tripleXform" style="display: none">
+      {{> triple_form}}
+    </div>
+<row>
+  <!-- iframe -->
+  <h3>Page to Harvest</h3>
+   <iframe src="{{url}}" height="400" width="900"></iframe> 
+</row>

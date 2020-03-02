@@ -1,0 +1,34 @@
+<script>
+  function validateForm() {
+    var x = $("#subjx").val();
+    if (!x || x === "") {
+        alert("Subject required");
+        return false;
+    }
+    x = $("#predx").val();
+    if (!x || x === "") {
+      alert("Predicate required");
+      return false;
+    }
+    x = $("#objx").val();
+    if (!x || x === "") {
+        alert("Object required");
+        return false;
+    }
+    return true;
+  }
+
+  function doClick() {
+    validateForm();
+    document.getElementById("nnForm").submit();
+  }
+</script>
+
+<form id="ttForm" method="POST" action="/postAtriple" onsubmit="return doClick()">
+  <input id="subjx" name="subject" placeholder="Subject" type="text" style='width:20em'>
+  <input id="predx" name="predicate" placeholder="Predicate" type="text" style='width:20em'>
+  <input id="objx" name="object" placeholder="Object" type="text" style='width:20em'><br/>
+  <input name="url" placeholder="url" type="text" value="{{url}}" style='width:61em'><br/>
+  <input name="notes" placeholder="comments" type="text" style='width:61em'><br/>
+  <button type="submit" class="btn btn-secondary" form="ttForm">Submit</button>
+</form>

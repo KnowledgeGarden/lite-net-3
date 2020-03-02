@@ -1,0 +1,9 @@
+<!-- form serves several purposes: adding text to existing topic, new independent topic, new child topic -->
+<form id="nnForm" method="POST" action="/posttopic">
+    <input type="hidden" name="topicid" value="{{id}}">
+    <input type="hidden" name="parentid" value="{{parentid}}">
+    <textarea placeholder="Begin typing" name="body" rows="4" cols="138"></textarea><br/>
+    <input name="url" placeholder="url" type="text" value="{{url}}" style='width:20em'><br/>
+
+    <button type="submit" class="btn btn-secondary" form="nnForm">Submit</button>
+</form>

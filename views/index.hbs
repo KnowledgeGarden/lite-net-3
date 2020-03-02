@@ -1,0 +1,28 @@
+
+
+<h1>{{title}}</h1>
+<h2>Journal</h2>
+
+<h3>Harvest a URL</h3>
+<form method="get" action="/iframe">
+  <input type="text" placeholder="Url to view" id="fName" name="fName" style='width:20em'>
+  <button type="submit">Submit</button>
+</form>
+<h3>Create a Triple</h3>
+{{> triple_form}}
+<h3>Create a Text Note</h3>
+{{> air_form}}
+
+<h3>Journal Entries</h3>
+
+<div style="overflow-y: auto; height:300px;">
+  {{#each noteList}}
+    <p>
+      {{date}}<br/>
+      {{{text}}}
+    </p><br/>
+  {{/each}}
+</div>
+
+
+

@@ -1,0 +1,36 @@
+<h1><a href="/">{{title}}</a></h1>
+{{#if source}}
+    <h2>Relation: {{label}}</h2>
+{{else}}
+    <h2>Topic: {{label}}</h2>
+{{/if}}
+{{> air_form}}
+<hr>
+{{#if source}}
+    <h3>Source Topic: {{{source}}}</h3>
+    <h3>Target Topic: {{{target}}}</h3>
+{{/if}}
+{{#if bodylist}}
+    <hr>
+    <h3>Body</h3>
+    <div style="overflow-y: auto; height:200px;">
+    {{#each bodylist}}
+            <p>
+            {{{this}}}
+            </p><br/>
+        {{/each}}
+    </div>
+{{/if}}
+{{#if urllist}}
+<h3>Resources</h3>
+    {{#each urllist}}
+        <a href="{{this}}">{{this}}</a><br/>
+    {{/each}}
+{{/if}}
+<h3>Backlinks</h3>
+<div style="overflow-y: auto; height:200px;">
+    {{#each backlinks}}
+        <li>{{{this}}}</li>
+    {{/each}}
+</div>
+<div syle="display: none;">{{jsonSource}}</div>

@@ -1,0 +1,18 @@
+<h1><a href="/">{{title}}</a></h1>
+<h2>Journal Entry</h2>
+<p>
+  {{date}}<br/>
+  {{{text}}}<br/>
+  {{#if urllist}}
+    <hr>
+    {{#each urllist}}
+      <a href="{{this}}">{{this}}</a><br/>
+    {{/each}}
+  {{/if}}
+  {{#if bodylist}}
+    <hr>
+    {{#each bodylist}}
+      {{{this}}}<br/>
+    {{/each}}
+  {{/if}}
+</p>
