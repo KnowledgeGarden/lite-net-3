@@ -1,13 +1,53 @@
 var express = require('express');
 var router = express.Router();
+//var fs = require('fs');
+//var path = require('path');
 var JournalModel = require('../apps/models/journal_model');
 var config = require('../config/config');
+var predicates;
+var hbs = require('hbs');
 
+hbs.registerHelper('toJSON', function(obj) {
+  return JSON.stringify(obj, null);
+});
+
+
+function validatePredicates() {
+  if (!predicates) {
+    var whichvocab = config.vocabulary;
+    whichvocab = "../config/vocab/"+whichvocab+"/labels";
+    //var datapath = path.join(__dirname, whichvocab);
+    //var f = fs.readFileSync(datapath, 'utf8');
+    predicates =  require(whichvocab);
+    /*var terms = predicates.terms;
+    var x = [];
+    for (var i = 0; i< terms.length; i++) {
+      x.push(terms[i]);
+    }
+    predicates = x;*/
+    console.info('IndexPreds', predicates);
+    console.info('IP2', predicates.terms[0]);
+  }
+}
+
+/**
+ * Ajax for typeahead
+ */
+router.get('/ajax/label', function(req, res, next) {
+  var q = req.query.query;
+  console.info('Ajax', q);
+  JournalModel.ajaxFindLabel(q, function(err, data) {
+    return res.json(data);
+  });
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  validatePredicates();
   JournalModel.list(function(err, noteList) {
     var data = {};
+    data.predicates = predicates;
+    console.info('IP3', predicates.terms[0]);
     data.title = config.banner;
     data.noteList = noteList;
     return res.render('index', data);

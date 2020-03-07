@@ -51,6 +51,12 @@ Database = function() {
     });
   };
 
+  self.find = function(query, callback) {
+    console.info('TDB', query);
+    db.find(query, function(err, data) {
+      return callback(err, data);
+    });
+  };
   
 };
 

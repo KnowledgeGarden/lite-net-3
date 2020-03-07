@@ -155,6 +155,23 @@ TopicModel = function() {
     });
   };
 
+  self.ajaxFindLabel = function(q, callback) {
+  
+    var rx = new RegExp(q, 'i');
+    console.info("TMajax", rx);
+    topicDB.find({ label: { $regex: rx } }, function (err, docs) {
+      console.info('AjaxFind', err, docs);
+      var json = {};
+      var lx = [];
+      
+      for (var i=0; i<docs.length; i++) {
+        lx.push(docs[i].label);
+      }
+      json.options = lx;
+      return callback(err, json);
+    });
+  };
+
 };
 
 if (!instance) {

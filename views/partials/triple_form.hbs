@@ -20,15 +20,86 @@
 
   function doClick() {
     validateForm();
-    document.getElementById("nnForm").submit();
+    document.getElementById("ttForm").submit();
   }
+
+  var predicates = JSON.parse('{{{toJSON predicates}}}');
+  var substringMatcher = function(strs) {
+    return function findMatches(q, cb) {
+      alert(q);
+      var matches, substringRegex;
+
+      // an array that will be populated with substring matches
+      matches = [];
+
+      // regex used to determine if a string contains the substring `q`
+      substrRegex = new RegExp(q, 'i');
+
+      // iterate through the pool of strings and for any string that
+      // contains the substring `q`, add it to the `matches` array
+      $.each(strs, function(i, str) {
+        if (substrRegex.test(str)) {
+          matches.push(str);
+        }
+      });
+
+      cb(matches);
+    };
+  };
+
+  $( document ).ready(function() {
+      
+      predicates = predicates.terms;
+      //subject
+      $('.subjectF').typeahead({
+        source: function (query, process) {
+          //alert(process);
+          return $.get('/ajax/label', { query: query }, function (data) {
+              //alert(data);
+              return process(data.options);
+          });
+        }
+      });
+      //predicate
+      var $input = $(".predicateF");
+      $input.typeahead({
+        source: predicates,
+        autoSelect: true
+      });
+      $input.change(function() {
+        
+        var current = $input.typeahead("getActive");
+        //alert(current);
+        if (current) {
+          if (current == $input.val()) {
+            // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
+          } else {
+            // This means it is only a partial match, you can either add a new item
+            // or take the active if you don't want new items
+          }
+        } else {
+          // Nothing is active so it is a new value (or maybe empty value)
+        }
+      });
+      //object
+      $('.objectF').typeahead({
+       source: function (query, process) {
+          //alert(process);
+          return $.get('/ajax/label', { query: query }, function (data) {
+              //alert(data);
+              return process(data.options);
+          });
+        }
+      });
+  });
+  
 </script>
 
 <form id="ttForm" method="POST" action="/postAtriple" onsubmit="return doClick()">
-  <input id="subjx" name="subject" placeholder="Subject" type="text" style='width:20em'>
-  <input id="predx" name="predicate" placeholder="Predicate" type="text" style='width:20em'>
-  <input id="objx" name="object" placeholder="Object" type="text" style='width:20em'><br/>
-  <input name="url" placeholder="url" type="text" value="{{url}}" style='width:61em'><br/>
+  <input class="subjectF" id="subjx" name="subject" placeholder="Subject" type="text" style='width:20em'>
+  <input class="predicateF" id="predx" name="predicate" placeholder="Predicate" type="text" style='width:20em'>
+  <input class="objectF" id="objx" name="object" placeholder="Object" type="text" style='width:20em'><br/><br/>
+  <input name="url" placeholder="url" type="text" value="{{url}}" style='width:61em'><br/><br/>
   <input name="notes" placeholder="comments" type="text" style='width:61em'><br/>
   <button type="submit" class="btn btn-secondary" form="ttForm">Submit</button>
 </form>

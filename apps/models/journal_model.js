@@ -112,6 +112,13 @@ JournalModel = function() {
     });
   };
 
+  self.ajaxFindLabel = function(q, callback) {
+    console.log('JournalAjax', q);
+    TopicModel.ajaxFindLabel(q, function(err, data) {
+      console.info('JMajax', err, data);
+      return callback(err, data);
+    });
+  };
   /**
    * Return a specific journal entry identified by <code>id</code>
    * @param id 
