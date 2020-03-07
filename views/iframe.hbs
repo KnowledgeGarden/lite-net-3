@@ -1,20 +1,29 @@
 <h1><a href="/">{{title}}</a></h1>
 <script>
+  $( document ).ready(function() {
+    //initTriples();   
+    if (!predicates) {
+      predicates = JSON.parse('{{{toJSON predicates}}}');
+    }
+  });
+
   function doText() {
-    document.getElementById('tripleXform').style.display = "none";
-    document.getElementById('textXform').style.display = "block";
+    $('#tripleXform').hide();
+    $('#textXform').show();
     document.getElementById('txb').classList.remove('btn-secondary');
     document.getElementById('txb').classList.add('btn-primary');
     document.getElementById('ttb').classList.remove('btn-primary');
     document.getElementById('ttb').classList.add('btn-secondary');
   }
   function doTriple() {
-    document.getElementById('textXform').style.display = "none";
-    document.getElementById('tripleXform').style.display = "block";
+    
+    $('#textXform').hide();
+    $('#tripleXform').show();
     document.getElementById('ttb').classList.remove('btn-secondary');
     document.getElementById('ttb').classList.add('btn-primary');
     document.getElementById('txb').classList.remove('btn-primary');
     document.getElementById('txb').classList.add('btn-secondary');
+    initTriples();
   }
 </script>
 <button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>

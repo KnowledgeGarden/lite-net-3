@@ -55,9 +55,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/iframe', function(req, res, next) {
+  validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
   var data = {};
+  data.predicates = predicates;
   data.title = config.banner;
   data.url = url;
   return res.render('iframe', data);
