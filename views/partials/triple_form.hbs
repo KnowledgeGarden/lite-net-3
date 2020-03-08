@@ -79,10 +79,10 @@
 </script>
 
 <form id="ttForm" method="POST" action="/postAtriple" onsubmit="return doClick()">
-  <input class="subjectF" id="subjx" name="subject" placeholder="Subject" type="text" style='width:20em'>
-  <input class="predicateF" id="predx" name="predicate" placeholder="Predicate" type="text" style='width:20em'>
-  <input class="objectF" id="objx" name="object" placeholder="Object" type="text" style='width:20em'><br/><br/>
-  <input name="url" placeholder="url" type="text" value="{{url}}" style='width:61em'><br/><br/>
-  <input name="notes" placeholder="comments" type="text" style='width:61em'><br/>
+  <input class="subjectF" id="subjx" name="subject" placeholder="Subject" type="text" style='width:15em'>
+  <input class="predicateF" id="predx" name="predicate" placeholder="Predicate" type="text" style='width:15em'>
+  <input class="objectF" id="objx" name="object" placeholder="Object" type="text" style='width:15em'><br/><br/>
+  <input name="url" placeholder="url" type="text" value="{{url}}" style='width:40em'><br/><br/>
+  <textarea placeholder="Comments" name="notes" rows="4" cols="94"></textarea><br/>
   <button type="submit" class="btn btn-secondary" form="ttForm">Submit</button>
 </form>
