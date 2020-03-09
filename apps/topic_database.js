@@ -65,7 +65,25 @@ Database = function() {
    * @param callback { err }
    */
   self.updateTopic = function(id, url, body, callback) {
-    //TODO
+    //TODO rewrite this to avoid duplicates
+    if (url) {
+      db.update({ id: id }, { $push: { urllist: url } }, {}, function (err) {
+        if (body) {
+          db.update({ id: id }, { $push: { bodylist: body } }, {}, function (err) {
+            return callback(err);
+          });
+        } else {
+          return callback(err);
+        }
+      });
+    } else if (body) {
+      db.update({ id: id }, { $push: { bodylist: body } }, {}, function (err) {
+        return callback(err);
+      });
+    } else {
+      console.error('TopicDatabas.updateTopic got nothing ', id);
+      return callback(null); //really, this is a dumb error: nothing sent here
+    }
   };
   
 };

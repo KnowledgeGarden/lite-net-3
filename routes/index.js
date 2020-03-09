@@ -171,9 +171,12 @@ router.post('/postAtriple', function(req, res, next) {
   var object = req.body.object;
   var url = req.body.url;
   var notes = req.body.notes;
+  var usr = req.session.theUser;
+  var usrId = req.session.theUserId;
   console.info('PostTriple', subject, predicate, object, url, notes);
   
-  JournalModel.processTriple(subject, predicate, object, url, notes, function(err, dat) {
+  JournalModel.processTriple(subject, predicate, object, url, notes,
+                             usrId, usr, function(err, dat) {
     console.log('BigTriple', dat);
       return res.redirect('/journal/'+dat.id);
     //});  
@@ -193,9 +196,11 @@ router.post('/posttopic', function(req, res, next) {
   var id = req.body.topicid;
   var parentId = req.body.parentid;
   var url = req.body.url;
+  var usr = req.session.theUser;
+  var usrId = req.session.theUserId;
   console.info("PostTopic", id, parentId, url, body);
   if (!id && !parentId && body) {
-    JournalModel.newAIR(body, url, function(err, data) {
+    JournalModel.newAIR(body, url, usrId, usr, function(err, data) {
       return res.redirect('/journal/'+data.id);
     });
   } else if (body || url) { // NOTE ignoring parentId for now

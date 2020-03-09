@@ -5,6 +5,8 @@
   {
     id: the node's id - can be a slug or a uuid
     date: date value
+    userHandle:
+    userId:
     label: the topic's label
     backlinks: list of backlink hrefs
     bodylist: list of text objects, each of which becomes an AIR journal entry
@@ -20,6 +22,8 @@
   {
     id:
     date:
+    userHandle:
+    userId:
     text: in an AIR entry, this is processed for wikilinks
     subj: triple journal entry only
     pred: triple journal entry only
@@ -50,9 +54,12 @@ JournalModel = function() {
    * @param object
    * @param url
    * @param notes
+   * @param userId
+   * @param userHandle
    * @param callback {err, dat}
    */
-  self.processTriple = function(subject, predicate, object, url, notes, callback) {
+  self.processTriple = function(subject, predicate, object, url, notes,
+                                userId, userHandle, callback) {
     var uid = uuid.v4();
     var json = {};
     var subjectSlug = slugUtil.toSlug(subject);
@@ -64,6 +71,8 @@ JournalModel = function() {
     json.pred = predicate;
     json.obj = object;
     json.date = new Date();
+    json.userId = userId;
+    json.userHandle = userHandle;
     if (url) {
       var ul = [];
       ul.push(url);
@@ -76,13 +85,13 @@ JournalModel = function() {
     }
     json.id = uid;
     //process the topics
-    TopicModel.processTopic(subject, subjectSlug, url, triple, uid);
-    TopicModel.processTopic(object, objectSlug, url, triple, uid);
+    TopicModel.processTopic(subject, subjectSlug, url, triple, uid, userId, userHandle);
+    TopicModel.processTopic(object, objectSlug, url, triple, uid, userId, userHandle);
     var predlabel = subject+" "+predicate+" "+object;
     TopicModel.processPredicate(predlabel, predicateSlug, 
                                 subject, subjectSlug,
                                 object, objectSlug,
-                                url, triple, uid);
+                                url, triple, uid, userId, userHandle);
     // persist the journal entry
     journalDB.put(json, function(err, dat) {
       console.info("ProcessTriple", err, dat);
@@ -148,7 +157,7 @@ JournalModel = function() {
   };
 
   
-  self.processTopics = function(topiclist, url, text, id) {
+  self.processTopics = function(topiclist, url, text, id, userId, userHandle) {
     console.info('ProcessTopics', topiclist, id, text);
     var json;
     var i;
@@ -159,7 +168,7 @@ JournalModel = function() {
                               json.slug,
                               url,
                               text,
-                              id
+                              id, userId, userHandle
                               );
     }
   };
@@ -168,13 +177,17 @@ JournalModel = function() {
    * Create a new AIR - text topic
    * @param content which may have wikilinks
    * @param url optional
+   * @param userId
+   * @param userHandle
    * @param callback { err, data }
    */
-  self.newAIR = function(content, url, callback) {
+  self.newAIR = function(content, url, userId, userHandle, callback) {
     linker.resolveWikiLinks(content, function(body, topiclist) {
       var uid = uuid.v4();
       var json = {};
       json.id = uid;
+      json.userId = userId;
+      json.userHandle = userHandle;
       json.text = body;
       json.date = new Date();
       if (url) {
@@ -189,7 +202,7 @@ JournalModel = function() {
         console.info("newAIR", err, dat, len, topiclist);
         if (len > 0) {
           console.info("newAir-1");
-          self.processTopics(topiclist, url, body, uid);
+          self.processTopics(topiclist, url, body, uid, userId, userHandle);
           return callback(err, dat);
         } else {
           console.info('newAir-2');

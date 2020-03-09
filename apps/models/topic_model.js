@@ -72,9 +72,10 @@ TopicModel = function() {
    * @param url
    * @param content of the journal entry
    * @param id of the journal entry
-   * 
+   * @param userId
+   * @param userHandle
    */
-  self.processTopic = function(term, slug, url, content, id) {
+  self.processTopic = function(term, slug, url, content, id, userId, userHandle) {
     console.info("ProcessTopic", term, slug, url, id);
     topicDB.get(slug, function(err, data) {
       //backlink to the journal entry
@@ -89,6 +90,8 @@ TopicModel = function() {
       } else {
         var json = {};
         json.id = slug;
+        json.userId = userId;
+        json.userHandle = userHandle;
         json.label = term;
         json.date = new Date();
         json.urllist = [];
@@ -115,12 +118,15 @@ TopicModel = function() {
    * @param url
    * @param content the journal entry itself
    * @param id the journal entry id
+   * @param userId
+   * @param userHandle
    */
   self.processPredicate = function(predicate, predicateSlug, 
                                    subject, subjectSlug,
                                    object, objectSlug,
                                    url,
-                                   content, id) {
+                                   content, id,
+                                   userId, userHandle) {
     console.info("ProcessPredicate", predicate, predicateSlug, url, id);
     topicDB.get(predicateSlug, function(err, data) {
       //backlink to the journal entry
@@ -135,6 +141,8 @@ TopicModel = function() {
       } else {
         var json = {};
         json.id = predicateSlug;
+        json.userId = userId;
+        json.userHandle = userHandle;
         json.label = predicate;
         json.date = new Date();
         json.source = "<a href=\"/topic/"+subjectSlug+"\">"+subject+"</a>"

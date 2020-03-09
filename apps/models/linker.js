@@ -6,32 +6,7 @@ var instance;
 
 Linker = function() {
   var self = this;
-/*
-  self.findSubject = function(triple) {
-    var begin = triple.indexOf("[[")+2;
-    var end = triple.indexOf("]]", begin);
-    var result = triple.substring(begin, end);
-    console.info("SUBJ", triple, result);
-    return result;
-  };
 
-  self.findObject = function(triple) {
-    var begin = triple.indexOf("[[")+2;
-    begin = triple.indexOf("[[", begin)+2;
-    var end = triple.indexOf("]]", begin);
-    var result = triple.substring(begin, end);
-    console.info("OBJ", triple, result);
-    return result;
-  };
-
-  self.findPredicate = function(triple) {
-    var begin = triple.indexOf("]]")+2;
-    var end = triple.indexOf("[[", begin);
-    var result = triple.substring(begin, end).trim();
-    console.info("PRED", triple, result);
-    return result;
-  };
-*/
   /**
    * Given a term --> topic,
    * create an href for it.
@@ -124,6 +99,7 @@ Linker = function() {
     result += " "+oHref;
     return result;
   };
+  
 };
 
 if (!instance) {
