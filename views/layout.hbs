@@ -5,10 +5,22 @@
     <link href="/css/style.css" media="all" rel="stylesheet" type="text/css" />
     <link href="/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <style>
+      .flashMsg {
+        border: 8px solid #272525;
+        border-radius: 14px;
+        width: 900px;
+        font-size: 150%;
+        background: white;
+      }
+    </style>  
   </head>
   <body>
-    <div container>
       {{> webmenubar}}
+    <div container>
+      {{#if flashMsg}}
+          <p class="flashMsg">{{{flashMsg}}}</p>
+      {{/if}}
       {{{body}}}
       {{> footer}}
     </div>

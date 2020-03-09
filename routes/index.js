@@ -13,10 +13,12 @@ hbs.registerHelper('toJSON', function(obj) {
   return JSON.stringify(obj, null);
 });
 
-function baseData() {
+function baseData(req) {
   var data = {};
   data.title = config.banner;
   data.canSignup = config.canSignup;
+  data.isAuthenticated = helper.isAuthenticated(req);
+
   return data;
 }
 
@@ -38,6 +40,72 @@ function validatePredicates() {
   }
 }
 
+/////////////////////
+// User Accounts
+/////////////////////
+
+router.get('/signup', function(req, res, next) {
+  var data = baseData(req);
+  return res.render('signup_form', data);
+});
+
+router.get('/login', function(req, res, next) {
+  console.info("login");
+  var data = baseData(req);
+  return res.render('login_form', data);
+});
+
+router.get('/logout', function(req, res, next) {
+  var struct = {};
+  req.session.theUser = null;
+  req.session.theUserId = null;
+  helper.logout(req);
+  return res.redirect('/');
+});
+
+router.post('/signup', function(req, res, next) {
+  var email = req.body.email,
+      handle = req.body.handle,
+      fullName = req.body.fullname,
+      pwd = req.body.password;
+  AdminModel.signup(email, handle, fullName, pwd, function(err) {
+    console.log("Index.post",email,err);
+    if (!err) {
+      req.flash("success", "Signup succeeded");
+      return res.redirect('/');
+    } else {
+      console.log("Index.post-2");
+      req.flash("error", "Signup Problem: "+err);
+      return res.redirect('/');       
+    }
+  });
+});
+
+router.post('/login', function(req, res, next) {
+  var email = req.body.email,
+      password = req.body.password;
+      //ip =  helper.checkIP(req, "login", "signup");
+  AdminModel.authenticate(email, password, function(err, truth, handle, userId) {
+    console.info("Authenticate", err, truth, handle, userId);
+    if (err) {
+      req.flash("error", err);
+    }
+    if (truth) {
+      req.session.theUser = handle;
+      req.session.theUserId = userId;
+      req.session.theUserEmail = email;
+      console.info("Authentication passed");
+      req.flash("success", "Login succeeded");
+      return res.redirect('/');
+    } else {
+      console.info("Authentication failed");
+      req.flash("error", "Login failed");
+      return res.redirect('/');
+    }
+  });
+});
+//////////////////////////
+
 /**
  * Ajax for typeahead
  */
@@ -53,10 +121,12 @@ router.get('/ajax/label', function(req, res, next) {
 router.get('/', function(req, res, next) {
   validatePredicates();
   JournalModel.list(function(err, noteList) {
-    var data = baseData();
+    var data = baseData(req);
     data.predicates = predicates;
     console.info('IP3', predicates.terms[0]);
-    
+    if (req.flash) {
+      data.flashMsg = req.flash("error") || req.flash("success");
+    }
     data.noteList = noteList;
     return res.render('index', data);
   });
@@ -66,7 +136,7 @@ router.get('/iframe', function(req, res, next) {
   validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
-  var data = baseData;
+  var data = baseData(req);
   data.predicates = predicates;
   data.url = url;
   return res.render('iframe', data);
@@ -78,7 +148,7 @@ router.get('/new_note_route', function(req, res, next) {
   var x = {};
   x.details = '[[Foo]] causes [[Bar]]';
   noteList.push(x);
-  var data = baseData();
+  var data = baseData(req);
   data.title = config.banner;
   data.noteList = noteList;
   data.isNew = true;
@@ -90,7 +160,7 @@ router.get('/new_note_route', function(req, res, next) {
  */
 router.get('/:id', function(req, res, next) {
   var id = req.params.id;
-  var data = baseData();
+  var data = baseData(req);
   data.id = id;
   return res.render('index', data);
 });
@@ -146,6 +216,8 @@ router.get('/topic/:id', function(req, res, next) {
     var json = data;
     json.title = config.banner;
     json.canSignup = config.canSignup;
+    json.isAuthenticated = helper.isAuthenticated(req);
+
     json.jsonSource = JSON.stringify(data);
     return res.render('topicview', json);
   });
@@ -162,36 +234,6 @@ router.get('/journal/:id', function(req, res, next) {
   });
 });
 
-/////////////////////
-// User Accounts
-/////////////////////
 
-router.get('/signup', function(req, res, next) {
-  var data = baseData();
-  return res.render('signup_form', data);
-});
-
-router.get('/login', function(req, res, next) {
-  var data = baseData();
-  return res.render('login_form', data);
-});
-
-router.get('/logout', function(req, res, next) {
-  var struct = {};
-  req.session.theUser = null;
-  req.session.theUserId = null;
-  helper.logout(req);
-  return res.redirect('/');
-});
-
-router.post('/signup', function(req, res, next) {
-
-  return res.redirect('/');
-});
-
-router.post('/login', function(req, res, next) {
-  
-  return res.redirect('/');
-});
 
 module.exports = router;

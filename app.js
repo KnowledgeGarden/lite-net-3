@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var flash = require("connect-flash");
+var session = require("express-session");
+var uuid = require('uuid');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -20,7 +23,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(flash());
+app.use(session({
+  genid: function(req) {
+    return uuid.v4(); // use UUIDs for session IDs
+  },
+  secret: "collaborative really hot sauce", //TODO ChangeMe
+  resave: true,
+  saveUninitialized: true
+}));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

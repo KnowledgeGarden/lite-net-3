@@ -57,6 +57,16 @@ Database = function() {
       return callback(err, data);
     });
   };
+
+  /**
+   * Add in either {@code url}, or {@code body} or both
+   * @param url  can be {@code null}
+   * @param body can be {@code null}
+   * @param callback { err }
+   */
+  self.updateTopic = function(id, url, body, callback) {
+    //TODO
+  };
   
 };
 

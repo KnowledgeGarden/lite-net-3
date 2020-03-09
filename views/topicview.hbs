@@ -3,8 +3,10 @@
 {{else}}
     <h2>Topic: {{label}}</h2>
 {{/if}}
-{{> air_form}}
-<hr>
+{{#if isAuthenticated}}
+    {{> air_form}}
+    <hr>
+{{/if}}
 {{#if source}}
     <h3>Source Topic: {{{source}}}</h3>
     <h3>Target Topic: {{{target}}}</h3>

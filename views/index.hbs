@@ -58,23 +58,24 @@
   }
 </script>
 <h2>Journal</h2>
-<button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
-<button type="button" id="ttb" class="btn btn-secondary" onclick="doTriple()">Triple Form</button>
-<button type="button" id="tub" class="btn btn-secpmdaru" onclick="doUrl()">URL Form</button>
-<div id="textXform">
-  {{> air_form}}
-</div>
-<div id="tripleXform" style="display: none">
-  {{> triple_form}}
-</div>
-<div id="urlXform" style="display: none">
-  <form method="get" action="/iframe">
-    <input type="text" placeholder="Url to view" id="fName" name="fName" style='width:20em'>
-    <button type="submit">Submit</button>
-  </form>
-</div>
-
-<hr>
+{{#if isAuthenticated}}
+  <button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
+  <button type="button" id="ttb" class="btn btn-secondary" onclick="doTriple()">Triple Form</button>
+  <button type="button" id="tub" class="btn btn-secpmdaru" onclick="doUrl()">URL Form</button>
+  <div id="textXform">
+    {{> air_form}}
+  </div>
+  <div id="tripleXform" style="display: none">
+    {{> triple_form}}
+  </div>
+  <div id="urlXform" style="display: none">
+    <form method="get" action="/iframe">
+      <input type="text" placeholder="Url to view" id="fName" name="fName" style='width:20em'>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <hr>
+{{/if}}
 <h3>Journal Entries</h3>
 
 <div style="overflow-y: auto; height:300px;">

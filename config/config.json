@@ -1,5 +1,5 @@
 {
   "banner": "LiteNet-3",
   "vocabulary": "biomed",
-  "canSignup": false
+  "canSignup": true
 }
