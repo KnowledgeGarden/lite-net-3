@@ -1,8 +1,10 @@
 var express = require('express');
+var helper = require('./helper');
 var router = express.Router();
-//var fs = require('fs');
-//var path = require('path');
+
 var JournalModel = require('../apps/models/journal_model');
+var AdminModel = require('../apps/models/admin_model');
+
 var config = require('../config/config');
 var predicates;
 var hbs = require('hbs');
@@ -11,6 +13,12 @@ hbs.registerHelper('toJSON', function(obj) {
   return JSON.stringify(obj, null);
 });
 
+function baseData() {
+  var data = {};
+  data.title = config.banner;
+  data.canSignup = config.canSignup;
+  return data;
+}
 
 function validatePredicates() {
   if (!predicates) {
@@ -45,10 +53,10 @@ router.get('/ajax/label', function(req, res, next) {
 router.get('/', function(req, res, next) {
   validatePredicates();
   JournalModel.list(function(err, noteList) {
-    var data = {};
+    var data = baseData();
     data.predicates = predicates;
     console.info('IP3', predicates.terms[0]);
-    data.title = config.banner;
+    
     data.noteList = noteList;
     return res.render('index', data);
   });
@@ -58,9 +66,8 @@ router.get('/iframe', function(req, res, next) {
   validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
-  var data = {};
+  var data = baseData;
   data.predicates = predicates;
-  data.title = config.banner;
   data.url = url;
   return res.render('iframe', data);
 });
@@ -71,23 +78,11 @@ router.get('/new_note_route', function(req, res, next) {
   var x = {};
   x.details = '[[Foo]] causes [[Bar]]';
   noteList.push(x);
-  var data = {};
+  var data = baseData();
   data.title = config.banner;
   data.noteList = noteList;
   data.isNew = true;
   return res.render('index', data);
-});
-
-router.get('/signup', function(req, res, next) {
-  var data = {};
-  data.title = config.banner;
-  return res.render('signup_form', data);
-});
-
-router.get('/login', function(req, res, next) {
-  var data = {};
-  data.title = config.banner;
-  return res.render('login_form', data);
 });
 
 /**
@@ -95,8 +90,7 @@ router.get('/login', function(req, res, next) {
  */
 router.get('/:id', function(req, res, next) {
   var id = req.params.id;
-  var data = {};
-  data.title = config.banner;
+  var data = baseData();
   data.id = id;
   return res.render('index', data);
 });
@@ -151,6 +145,7 @@ router.get('/topic/:id', function(req, res, next) {
     console.info("GetTopic-2", data);
     var json = data;
     json.title = config.banner;
+    json.canSignup = config.canSignup;
     json.jsonSource = JSON.stringify(data);
     return res.render('topicview', json);
   });
@@ -161,10 +156,42 @@ router.get('/journal/:id', function(req, res, next) {
   console.info("GetJournal", id);
   JournalModel.getJournalEntry(id, function(err, data) {
     data.title = config.banner;
+    data.canSignup = config.canSignup;
     console.info("GetJournal-1", data);
     return res.render('journalview', data);
   });
 });
 
+/////////////////////
+// User Accounts
+/////////////////////
+
+router.get('/signup', function(req, res, next) {
+  var data = baseData();
+  return res.render('signup_form', data);
+});
+
+router.get('/login', function(req, res, next) {
+  var data = baseData();
+  return res.render('login_form', data);
+});
+
+router.get('/logout', function(req, res, next) {
+  var struct = {};
+  req.session.theUser = null;
+  req.session.theUserId = null;
+  helper.logout(req);
+  return res.redirect('/');
+});
+
+router.post('/signup', function(req, res, next) {
+
+  return res.redirect('/');
+});
+
+router.post('/login', function(req, res, next) {
+  
+  return res.redirect('/');
+});
 
 module.exports = router;

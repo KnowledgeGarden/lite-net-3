@@ -7,11 +7,10 @@ Slugger = function() {
   var self = this;
 
   self.toSlug = function(term) {
-    return slugify(term, '_');
-    //var result = term.toLowerCase();
-    //result = self.replaceAll(result, ' ', '_');
-    //result = self.replaceAll(result, '?', '_');
-    //return result;
+    // by making it lower case, we trap the same term
+    // no matter whether caps are involved.
+    var tx = term.toLowerCase();
+    return slugify(tx, '_');
   };
 
       //https://stackoverflow.com/questions/1137436/what-are-useful-javascript-methods-that-extends-built-in-objects/1137579#1137579

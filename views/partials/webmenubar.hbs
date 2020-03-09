@@ -62,7 +62,9 @@
                             <li><a href="/logout">Logout</a></li>
                             <!--<li><a href="/profile/{{email}}">Profile</a></li>-->
                         {{else}}
-                            <li><a href="/signup">Signup</a></li>
+                            {{#if canSignup}}
+                                <li><a href="/signup">Signup</a></li>
+                            {{/if}}
                             <li><a href="/login">Login</a></li>
                         {{/if}}
 
