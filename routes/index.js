@@ -78,6 +78,18 @@ router.get('/new_note_route', function(req, res, next) {
   return res.render('index', data);
 });
 
+router.get('/signup', function(req, res, next) {
+  var data = {};
+  data.title = config.banner;
+  return res.render('signup_form', data);
+});
+
+router.get('/login', function(req, res, next) {
+  var data = {};
+  data.title = config.banner;
+  return res.render('login_form', data);
+});
+
 /**
  * Get page identified by its slug
  */

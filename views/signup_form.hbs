@@ -1,0 +1,65 @@
+
+<div style="margin-top: 50px;">
+
+    <h1>Signup</h1>
+    {{#if invitationOnly}}
+        <div>
+            <h2>Signup is by invitation only: requires your email to be on the invitation list.</h2>
+        </div>
+    {{/if}}
+   <!-- <form name="validate" class="validate">
+        <div class="form-group">
+            <label class="text-danger">Handle must be single word and unique. Validate Handle here. If chosen value is available, it will return in the Handle field below.</label>
+            <input type="text" class="form-control" name="vhandle">
+            <button type="submit" class="btn btn-primary btn-lg">Validate</button>
+        </div>
+
+    </form>
+    <hr/>-->
+    <form action="/signup" method="post">
+        <div class="form-group">
+            <label>Email <b class="text-danger">Required for login</b></label>
+            <input type="text" class="form-control" name="email">
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" class="form-control" name="fullname">
+        </div>
+        <div class="form-group">
+            <label>Handle <b class="text-danger">Required & must be a single word</b></label>
+            <input type="text" class="form-control" name="handle">
+        </div>
+        <!--<div class="form-group">
+            <label>Avatar</label>
+            <input type="text" class="form-control" name="avatar">
+        </div>
+        <div class="form-group">
+            <label>Home Page</label>
+            <input type="text" class="form-control" name="homepage">
+        </div>-->
+        <div class="form-group">
+            <label>Password (Legal characters include #@$%*! and numbers and letters)</label>
+            <input type="password" class="form-control" name="password">
+        </div>
+        <!--<h4>GeoLocation</h4>
+        It is possible to use the GeoMap Application: navigate to your location and click the map to get Latitude and Longitute values.
+        <div class="form-group">
+            <label>Latitude</label>
+            <input type="text" id="Latitude" class="form-control" name="Latitude" value="">
+        </div>
+        <div class="form-group">
+            <label>Longitude</label>
+            <input type="text" id="Longitude" class="form-control" name="Longitude" value="">
+        </div>-->
+        <!--          <div class="form-group">
+                      <input type="button" value="Get Location" onclick="getLocationConstant()"/> Might fail to get values
+                  </div> -->
+
+        <button type="submit" class="btn btn-success btn-lg">Signup</button>
+    </form>
+    <hr>
+
+    <p>Already have an account? <a href="/login">Login</a></p>
+    <p>Or go <a href="/">home</a>.</p>
+</div>
+
