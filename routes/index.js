@@ -136,10 +136,14 @@ router.get('/iframe', function(req, res, next) {
   validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
-  var data = baseData(req);
-  data.predicates = predicates;
-  data.url = url;
-  return res.render('iframe', data);
+  JournalModel.listByURL(url, function(err, hits) {
+    var data = baseData(req);
+    data.predicates = predicates;
+    data.url = url;
+    data.hits = hits;
+    return res.render('iframe', data);
+  });
+  
 });
 
 router.get('/new_note_route', function(req, res, next) {

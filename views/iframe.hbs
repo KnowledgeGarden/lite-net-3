@@ -8,7 +8,7 @@
   z-index: 1; /* Stay on top */
   top: 30px; /* Stay at the top */
   right: 0;
-  background-color:#99ccff; /* Black*/
+  background-color:#b6d3f0;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 60px; /* Place content 60px from the top */
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
@@ -83,16 +83,25 @@
     initTriples();
   }
 </script>
-<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
-      <button type="button" id="ttb" class="btn btn-secondary" onclick="doTriple()">Triple Form</button>
-      <div id="textXform">
-        {{> air_form}}
-      </div>
-      <div id="tripleXform" style="display: none">
-        {{> triple_form}}
-      </div>
+<div id="mySidenav" class="sidenav" style="margin-left:5px;">
+  <div style="margin-left:5px;">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
+    <button type="button" id="ttb" class="btn btn-secondary" onclick="doTriple()">Triple Form</button>
+    <div id="textXform">
+      {{> air_form}}
+    </div>
+    <div id="tripleXform" style="display: none">
+      {{> triple_form}}
+    </div>
+  </div>
+  <hr>
+  <h3 style="margin-left:5px;">History</h3>
+  <div style="overflow-y: auto; height:400px; margin-left:5px; font-size:medium;">
+    {{#each hits}} 
+      <p>{{{text}}}</p><br/>
+    {{/each}}
+  </div>
 </div>
 <div id="main">
   <div id="harvest">

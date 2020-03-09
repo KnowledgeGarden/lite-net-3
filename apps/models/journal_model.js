@@ -100,8 +100,15 @@ JournalModel = function() {
 
   };
 
+  self.listByURL = function(url, callback) {
+    journalDB.findByURL(url, function(err, data) {
+      return callback(err, data);
+    });
+  };
+
   /**
-   * List journal tries
+   * List journal entries
+   * TODO needs pagination
    * @param callback { err, data }
    */
   self.list = function(callback) {

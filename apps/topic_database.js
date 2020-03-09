@@ -51,9 +51,26 @@ Database = function() {
     });
   };
 
+  /**
+   * General find support
+   * @param query json
+   * @param callback { err, data }
+   */
   self.find = function(query, callback) {
     console.info('TDB', query);
     db.find(query, function(err, data) {
+      return callback(err, data);
+    });
+  };
+
+  /**
+   * Find topics by URL
+   * @param url
+   * @param callback { err, data }
+   */
+  self.findByURL = function(url, callback) {
+    self.find({ url: url }, function(err, data) {
+      console.info('FindByUrl', err, data);
       return callback(err, data);
     });
   };

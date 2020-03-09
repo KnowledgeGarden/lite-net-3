@@ -41,6 +41,31 @@ Database = function() {
       return callback(err, data);
     });
   };
+
+    /**
+   * General find support
+   * @param query json
+   * @param callback { err, data }
+   */
+  self.find = function(query, callback) {
+    console.info('JnlFind', query);
+    db.find(query, function(err, data) {
+      return callback(err, data);
+    });
+  };
+
+  /**
+   * Find topics by URL
+   * @param url
+   * @param callback { err, data }
+   */
+  self.findByURL = function(url, callback) {
+    self.find({ urllist: url }, function(err, data) {
+      console.info('JnlFindByUrl', err, data);
+      return callback(err, data);
+    });
+  };
+
 };
 
 if (!instance) {
