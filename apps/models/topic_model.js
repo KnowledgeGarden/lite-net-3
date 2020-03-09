@@ -92,6 +92,7 @@ TopicModel = function() {
         json.id = slug;
         json.userId = userId;
         json.userHandle = userHandle;
+        json.nodeType = 'topic';
         json.label = term;
         json.date = new Date();
         json.urllist = [];
@@ -111,6 +112,7 @@ TopicModel = function() {
    * Process a term which is a predicate - also a topic
    * @param predicate 
    * @param predicateSlug
+   * @param type the predicate type - not its slug
    * @param subject 
    * @param subjectSlug
    * @param object 
@@ -121,7 +123,7 @@ TopicModel = function() {
    * @param userId
    * @param userHandle
    */
-  self.processPredicate = function(predicate, predicateSlug, 
+  self.processPredicate = function(predicate, predicateSlug, type,
                                    subject, subjectSlug,
                                    object, objectSlug,
                                    url,
@@ -143,6 +145,8 @@ TopicModel = function() {
         json.id = predicateSlug;
         json.userId = userId;
         json.userHandle = userHandle;
+        json.nodeType = 'relation';
+        json.type = type;
         json.label = predicate;
         json.date = new Date();
         json.source = "<a href=\"/topic/"+subjectSlug+"\">"+subject+"</a>"

@@ -88,7 +88,7 @@ JournalModel = function() {
     TopicModel.processTopic(subject, subjectSlug, url, triple, uid, userId, userHandle);
     TopicModel.processTopic(object, objectSlug, url, triple, uid, userId, userHandle);
     var predlabel = subject+" "+predicate+" "+object;
-    TopicModel.processPredicate(predlabel, predicateSlug, 
+    TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                 subject, subjectSlug,
                                 object, objectSlug,
                                 url, triple, uid, userId, userHandle);
