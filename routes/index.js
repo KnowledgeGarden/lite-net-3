@@ -118,7 +118,7 @@ router.get('/ajax/label', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', helper.isPrivate, function(req, res, next) {
   validatePredicates();
   JournalModel.list(function(err, noteList) {
     var data = baseData(req);
@@ -158,7 +158,7 @@ router.get('/new_note_route', function(req, res, next) {
 /**
  * Get page identified by its slug
  */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   var data = baseData(req);
   data.id = id;
@@ -208,7 +208,7 @@ router.post('/posttopic', function(req, res, next) {
   }
 });
 
-router.get('/topic/:id', function(req, res, next) {
+router.get('/topic/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   console.info("GetTopic", id);
   JournalModel.getTopic(id, function(err, data) {
@@ -223,7 +223,7 @@ router.get('/topic/:id', function(req, res, next) {
   });
 });
 
-router.get('/journal/:id', function(req, res, next) {
+router.get('/journal/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   console.info("GetJournal", id);
   JournalModel.getJournalEntry(id, function(err, data) {

@@ -1,5 +1,6 @@
 {
   "banner": "LiteNet-3",
   "vocabulary": "biomed",
-  "canSignup": true
+  "canSignup": true,
+  "isPrivatePortal": true
 }
