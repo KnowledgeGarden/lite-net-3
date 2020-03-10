@@ -7,6 +7,7 @@ var AdminModel;
 AdminModel = function() {
   var self = this;
 
+
   /**
    * Register a new account
    * @param email

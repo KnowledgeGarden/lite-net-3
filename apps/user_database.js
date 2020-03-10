@@ -18,6 +18,21 @@ UserDatabase = function() {
   };
 
   /**
+   * Report {@code true} if database is empty
+   * @param callback { truth }
+   */
+  self.isEmpty = function(callback) {
+    db.find({}, function(err, doc) {
+      console.info("UserEmpty", err, doc);
+      var truth = false;
+      if (doc && doc.length > 0) {
+        truth = true;
+      }
+      return callback(truth);
+    });
+  };
+
+  /**
    * Return an account or {@code null}
    * @param email
    * @param callback { err, json }

@@ -34,6 +34,8 @@
 */
 var journalDB = require('../journal_database');
 var TopicModel = require('./topic_model');
+var bootstrap = require('../bootstrap');
+
 var topicDB = require('../topic_database');
 var uuid = require('uuid');
 var slugUtil = require('../slug');
@@ -45,6 +47,8 @@ var JournalModel,
  */
 JournalModel = function() {
   var self = this;
+  //validate user database
+  bootstrap.bootstrap();
 
   /**
    * Form a journal entry and construct the backlinks for
