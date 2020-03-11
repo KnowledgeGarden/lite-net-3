@@ -3,12 +3,17 @@
     $( document ).ready(function() {
         var editor = new MediumEditor('.richarea');
     });
+
+    function doAirClick() {
+        var urxaa = document.getElementById('urlfield').value.trim();
+        return validURL(urxaa);
+    }
 </script>
-<form id="nnForm" method="POST" action="/posttopic">
+<form id="nnForm" method="POST" action="/posttopic" onsubmit="return doAirClick()">
     <input type="hidden" name="topicid" value="{{id}}">
     <input type="hidden" name="parentid" value="{{parentid}}">
     <textarea class="richarea" placeholder="Begin typing" name="body" rows="4" cols="94"></textarea><br/>
-    <input name="url" placeholder="url" type="text" value="{{url}}" style='width:20em'><br/>
+    <input id="urlfield" name="url" placeholder="url" type="text" value="{{url}}" style='width:20em'><br/>
 
     <button type="submit" class="btn btn-secondary" form="nnForm">Submit</button>
 </form>
