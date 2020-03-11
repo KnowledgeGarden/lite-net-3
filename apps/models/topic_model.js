@@ -89,7 +89,11 @@ TopicModel = function() {
         });
       } else {
         var json = {};
-        json.id = slug;
+        if (slug.startsWith('TOP')) {
+          json.id = slug;
+        } else {
+          json.id = 'TOP_'+slug;
+        }
         json.userId = userId;
         json.userHandle = userHandle;
         json.nodeType = 'topic';
@@ -142,7 +146,11 @@ TopicModel = function() {
         });
       } else {
         var json = {};
-        json.id = predicateSlug;
+        if (predicateSlug.startsWith('TOP')) {
+          json.id = predicateSlug;
+        } else {
+          json.id = 'TOP_'+predicateSlug;
+        }
         json.userId = userId;
         json.userHandle = userHandle;
         json.nodeType = 'relation';

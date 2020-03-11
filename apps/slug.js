@@ -6,6 +6,7 @@ var instance;
 Slugger = function() {
   var self = this;
 
+
   self.toSlug = function(term) {
     // by making it lower case, we trap the same term
     // no matter whether caps are involved.

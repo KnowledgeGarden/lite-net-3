@@ -8,6 +8,28 @@ Linker = function() {
   var self = this;
 
   /**
+   * A term might be surrounded with html, e.g. <b>, <i>
+   * @param term 
+   * @returns cleaned up term
+   */
+  self.cleanTerm = function(term) {
+    if (term.startsWith('<')) {
+      var result = term;
+      var where = result.indexOf('>');
+      if (where > -1) {
+        result = result.substring((where+1));
+        where = result.indexOf('<');
+        if (where > -1) {
+          result = result.substring(0, where);
+        }
+        return result;
+      }
+    } else {
+      return term;
+    }
+  }
+
+  /**
    * Given a term --> topic,
    * create an href for it.
    * @param term 
@@ -55,7 +77,9 @@ Linker = function() {
       end = text.indexOf("]]", begin);
       term = text.substring(begin, end).trim();
       console.info('LINKER-1', begin, end, term, text);
-      slug = slugUtil.toSlug(term);
+      term = self.cleanTerm(term);
+      //ALL wikilinks are to Topics
+      slug = 'TOP_'+slugUtil.toSlug(term);
       // add href to result
       result += self.getHref(term, slug)+" ";
       jsonT = {};
