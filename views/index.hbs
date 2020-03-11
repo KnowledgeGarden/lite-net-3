@@ -56,7 +56,19 @@
     which = 'triple';
     initTriples();
   }
+  function doIClick() {
+    var iurl = document.getElementById('fName').value.trim();
+    var truth = validURL(iurl);
+    alert(iurl, truth);
+    return truth; //validURL(iurl);
+  }
+
 </script>
+<style>
+  #mypara {
+    width: 800px; border-style: solid; border: 1px solid green;
+  }
+</style>
 <h2>Journal</h2>
 {{#if isAuthenticated}}
   <button type="button" id="txb" class="btn btn-primary" onclick="doText()">Text Form</button>
@@ -69,7 +81,7 @@
     {{> triple_form}}
   </div>
   <div id="urlXform" style="display: none">
-    <form method="get" action="/iframe">
+    <form method="get" action="/iframe" onsubmit="return doIClick()">
       <input type="text" placeholder="Url to view" id="fName" name="fName" style='width:20em'>
       <button type="submit">Submit</button><br/>
       <b>Note: Not all websites will allow this iframe request.</b>
@@ -81,10 +93,10 @@
 
 <div style="overflow-y: auto; height:300px;">
   {{#each noteList}}
-    <p>
+    <div id="mypara">
       {{date}}<br/>
       {{{text}}}
-    </p><br/>
+    </div><br/>
   {{/each}}
 </div>
 
