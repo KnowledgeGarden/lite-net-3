@@ -5,6 +5,7 @@ Just:
 * npm install
 * Edit the file /config/owner.json to suit your own credentials
 * Edit the file /config/config.json to suit whether private or public
+* Remove all database files in /data to start fresh
 * npm start
 * visit http://localhost:4000/
 
