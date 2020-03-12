@@ -16,9 +16,11 @@
     "catalyze",
     "not catalyze",
     "cause",
+    "cleave",
     "conjugate",
     "conjugated by",
     "contain",
+    "control",
     "deactivate",
     "decrease",
     "defined as",
@@ -41,6 +43,10 @@
     "inhibit",
     "is a",
     "linked to",
+    "located at",
+    "located in",
+    "mediate",
+    "move"
     "neutralize",
     "not absorb",
     "not affect",
@@ -79,6 +85,7 @@
     "transport",
     "trigger",
     "up regulate",
+    "use",
     "weaken"
   ]
 }
