@@ -72,10 +72,12 @@ Linker = function() {
     var term;
     var slug;
     var jsonT;
+    //loop if there is any [[ found
     while (begin > -1) {
       begin += 2;
+      //find the end
       end = text.indexOf("]]", begin);
-      if (end > -1) {
+      if (end > -1) { // end found
         term = text.substring(begin, end).trim();
         console.info('LINKER-1', begin, end, term, text);
         term = self.cleanTerm(term);
@@ -89,22 +91,22 @@ Linker = function() {
         topiclist.push(jsonT);
         end += 2;
         begin = text.indexOf("[[", end);
-        console.info('LINKER-2', begin, end, term, text);
+        console.info('LINKER-2', begin, end, text.length, term, text);
         if (begin === -1 && (end) < text.length) {
           //add remainder, if any
           result += text.substring(end);
-        } else {
+        } else if (begin > -1 && end < text.length) {
           //add gap from last end+2
           result += text.substring((end), begin)+" ";
         }
-      } else {
+      } else { // proper end not found - error condition
         return callback("Open Wikilink with improper or no Closing Wikilink-missing ]]");
       }
     }
-    if (result === "") {
+    if (result === "") { // if nothing found, just return the text
       result = text;
     }
-    return callback(result.trim(), topiclist);
+    return callback(null, result.trim(), topiclist);
   };
 
   /**

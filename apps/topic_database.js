@@ -30,13 +30,22 @@ Database = function() {
   };
 
   /**
+   * For compacting as needed
+   */
+  self.compact = function() {
+    db.persistence.compactDatafile(function(erx) {
+      return callback(erx);
+    });
+  };
+
+  /**
    * Remove a topic identified by <code>_id</code>
    * @param _id 
    * @param callback { err, numRemoved }
    */
   self.delete = function(_id, callback) {
     db.remove({ _id: _id }, {}, function (err, numRemoved) {
-      return callback(err, numRemoved);
+        return callback(err, numRemoved);
     });
   };
 

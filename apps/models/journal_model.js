@@ -134,6 +134,7 @@ JournalModel = function() {
     json.bodylist = [];
     if (notes) {
       linker.resolveWikiLinks(notes, function(err, body, topiclist) {
+        console.info('ProcessTriple-1', err, body, topiclist);
         if (err) {
           return (err, null, null);
         }
@@ -153,7 +154,7 @@ JournalModel = function() {
           var len = topiclist.length;
           console.info("PT-1", err, dat, len, topiclist);
           if (len > 0) {
-            self.processTopics(topiclist, url, notes, uid, userId, userHandle);
+            self.processTopics(topiclist, url, null, uid, userId, userHandle);
           } 
           return callback(err, dat);
         });
@@ -271,7 +272,9 @@ JournalModel = function() {
   self.newAIR = function(content, url, userId, userHandle, callback) {
     var json = {};
     json.raw = content;
+    console.info('NewAirJnl-1', content, url);
     linker.resolveWikiLinks(content, function(err, body, topiclist) {
+      console.info('NewAirJnl-2', err, body, topiclist);
       if (err) {
         return callback(err);
       }
@@ -293,7 +296,7 @@ JournalModel = function() {
         console.info("newAIR", err, dat, len, topiclist);
         if (len > 0) {
           console.info("newAir-1");
-          self.processTopics(topiclist, url, content, uid, userId, userHandle);
+          self.processTopics(topiclist, url, null, uid, userId, userHandle);
           return callback(err, dat);
         } else {
           console.info('newAir-2');

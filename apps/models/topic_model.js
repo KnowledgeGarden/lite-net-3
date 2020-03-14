@@ -54,7 +54,11 @@ TopicModel = function() {
           // insert the new one
           topicDB.put(data, function(err, dat) {
             console.info('UpdateTopic-4', err, dat);
-            return callback(err);
+            //topicDB.compact(function(erx)  {
+              //NO: compacting messes up backlinks - not sure why
+              return callback(err, dat);
+            //});
+            
           });
         });
       } else {
