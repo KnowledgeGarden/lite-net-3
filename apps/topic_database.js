@@ -76,6 +76,21 @@ Database = function() {
   };
 
   /**
+   * Replace a topic
+   * @param newTopic
+   * @param callback { err, numRep }
+   */
+  self.replaceBacklinks = function(_id, backlinks, callback) {
+    db.update({ _id: _id }, {$set:{ backlinks: backlinks }}, {}, function(err, numRep) {
+      console.info('ReplaceBacklinks', _id, backlinks, err, numRep);
+      db.persistence.compactDatafile(function(erx) {
+        return callback(erx, numRep);
+      });
+      
+    });
+  };
+
+  /**
    * Add in either {@code url}, or {@code body} or both
    * @param url  can be {@code null}
    * @param body can be {@code null}

@@ -8,7 +8,7 @@
     userHandle:
     userId:
     label: the topic's label
-    backlinks: list of backlink hrefs
+    backlinks: list of backlink hrefs ** Changing to list of Journal IDs
     bodylist: list of text objects, each of which becomes an AIR journal entry
        - has been processed for wikilinks and other items
     urllist: list of URLs associated with this topic
@@ -17,6 +17,20 @@
     source: href to source (subject) relations only
     target: href to target (object) relations only
   }
+  example topic
+{
+	"id": "TOP_backlinks",
+	"userId": "7563c26a-319b-4652-b9ea-0b8cfee34b0b",
+	"userHandle": "Joe",
+	"nodeType": "topic",
+	"label": "Backlinks",
+	"date": {
+		"$$date": 1584130903110
+	},
+	"urllist": [],
+	"backlinks": ["<a href=\"/journal/JNL_bfb2fdad-69ec-41ba-864c-cad1d8c5f16a\"><p>Testing [[Backlinks]]<br></p></a>"],
+	"_id": "BY8d6yU8fAkajCzH"
+}
 
   Journal Entry Structure
   {
@@ -48,10 +62,42 @@ var JournalModel,
  */
 JournalModel = function() {
   var self = this;
-  //validate user database
+  //validate user database and other bootstrap functions
   bootstrap.bootstrap();
 
-  
+  /**
+   * For a given {@code topic}, populate its backlinks
+   * @param topic
+   * @param callback { done }
+   */
+  self.populateBacklinks = function(topic, callback) {
+    console.info('Populating', topic);
+    var backlinks = topic.backlinks;
+    var newLinks = [];
+    var theLink;
+    backlinks.forEach(function(jnlId) {
+      //TODO might want to include sorting
+      console.log('Populating-1', jnlId);
+      journalDB.find({ id: jnlId}, function(err, data) {
+        var dx = data[0];
+        console.log('Populating-2', err, data, dx.raw);
+
+        //data is the entire journal entry
+        //We want raw; for now, href the whole thing
+        //TODO add an image for the href
+        theLink = "<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>";
+        newLinks.push(theLink);
+        console.log('Populating-3', err, newLinks);
+
+      });
+      topic.backlinks = newLinks;
+      console.info('Populated', topic);
+      
+    });
+    return callback(true);
+
+  };
+
   /**
    * Form a journal entry and construct the backlinks for
    * the subject, predicate, and object
@@ -152,7 +198,10 @@ JournalModel = function() {
    */
   self.getTopic = function(id, callback) {
     topicDB.get(id, function(err, data) {
-      return callback(err, data);
+      self.populateBacklinks(data, function(done) {
+        return callback(err, data);
+      });
+      
     });
   };
 

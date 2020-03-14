@@ -222,13 +222,18 @@ router.get('/topic/:id', helper.isPrivate, function(req, res, next) {
   console.info("GetTopic", id);
   JournalModel.getTopic(id, function(err, data) {
     console.info("GetTopic-2", data);
-    var json = data;
-    json.title = config.banner;
-    json.canSignup = config.canSignup;
-    json.isAuthenticated = helper.isAuthenticated(req);
+    if (data) {
+      var json = data;
+      json.title = config.banner;
+      json.canSignup = config.canSignup;
+      json.isAuthenticated = helper.isAuthenticated(req);
 
-    json.jsonSource = JSON.stringify(data);
-    return res.render('topicview', json);
+      json.jsonSource = JSON.stringify(data);
+      return res.render('topicview', json);
+    } else {
+      req.flash("error", "Cannot find Topic: "+id);
+      return res.redirect('/');
+    }
   });
 });
 
@@ -236,10 +241,15 @@ router.get('/journal/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   console.info("GetJournal", id);
   JournalModel.getJournalEntry(id, function(err, data) {
-    data.title = config.banner;
-    data.canSignup = config.canSignup;
-    console.info("GetJournal-1", data);
-    return res.render('journalview', data);
+    if (data) {
+      data.title = config.banner;
+      data.canSignup = config.canSignup;
+      console.info("GetJournal-1", data);
+      return res.render('journalview', data);
+    } else {
+      req.flash("error", "Cannot find Journal: "+id);
+      return res.redirect('/');
+    }
   });
 });
 

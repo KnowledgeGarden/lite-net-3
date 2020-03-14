@@ -78,12 +78,10 @@ TopicModel = function() {
   self.processTopic = function(term, slug, url, content, id, userId, userHandle) {
     console.info("ProcessTopic", term, slug, url, id);
     topicDB.get(slug, function(err, data) {
-      //backlink to the journal entry
-      var bl ="<a href=\"/journal/"+id+"\">"+content+"</a>";
       console.info('ProcessTopic-1', err, data);
       if (data) {
         self.updateTopic(slug, url, content, function(err) {
-          topicDB.addBacklink(slug, bl, function(err) {
+          topicDB.addBacklink(slug, id, function(err) {
             console.info("ABL", err);
           });
         });
@@ -104,7 +102,7 @@ TopicModel = function() {
           json.urllist.push(url);
         }
         json.backlinks = [];
-        json.backlinks.push(bl);
+        json.backlinks.push(id);
         topicDB.put(json, function(err, dat) {
           console.info('ProceessTopic-2', err, dat);
         });
@@ -135,12 +133,10 @@ TopicModel = function() {
                                    userId, userHandle) {
     console.info("ProcessPredicate", predicate, predicateSlug, url, id);
     topicDB.get(predicateSlug, function(err, data) {
-      //backlink to the journal entry
-      var bl ="<a href=\"/journal/"+id+"\">"+content+"</a>";
       console.info('ProcessPredicate-1', err, data);
       if (data) {
         self.updateTopic(predicateSlug, url, content, function(err) {
-          topicDB.addBacklink(predicateSlug, bl, function(err) {
+          topicDB.addBacklink(predicateSlug, id, function(err) {
             console.info("BBL", err);
           });
         });
@@ -167,7 +163,7 @@ TopicModel = function() {
           json.urllist.push(url);
         }
 
-        json.backlinks.push(bl);
+        json.backlinks.push(id);
         topicDB.put(json, function(err, dat) {
           console.info('ProcessPredicate-2', err, dat);
         });
