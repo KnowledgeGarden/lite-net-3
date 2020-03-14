@@ -11,12 +11,12 @@ Bootstrap = function() {
 
   self.migrateTransclusions = function(callback) {
     console.info('Migrating Transclusions');
-    //TODO
+    //Not using this
     //For every href entry in backlinks array
     // if it is an href. find the journal id and substitute that into
     // a new array  journal/
     
-    topicDB.find({}, function(err, data) {
+   /* topicDB.find({}, function(err, data) {
       console.info('Migrate-1', err, data);
       var backlinks;
       var newLinks = [];
@@ -48,7 +48,7 @@ Bootstrap = function() {
         }
       });
      
-    });
+    });*/
     return callback(true);
     
   };

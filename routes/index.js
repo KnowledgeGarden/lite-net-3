@@ -209,7 +209,7 @@ router.post('/posttopic', function(req, res, next) {
   console.info("PostTopic", id, parentId, url, body);
   if (!id && !parentId && body) {
     JournalModel.newAIR(body, url, usrId, usr, function(err, data) {
-      console.info('NewAirIndex', err, data);
+      console.info('NewAirIndex', err)
       if (err) {
         req.flash("error", err);
         return res.redirect('/');

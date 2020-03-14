@@ -65,6 +65,7 @@ JournalModel = function() {
   //validate user database and other bootstrap functions
   bootstrap.bootstrap();
 
+
   /**
    * For a given {@code topic}, populate its backlinks
    * @param topic
@@ -75,27 +76,36 @@ JournalModel = function() {
     var backlinks = topic.backlinks;
     var newLinks = [];
     var theLink;
-    backlinks.forEach(function(jnlId) {
-      //TODO might want to include sorting
-      console.log('Populating-1', jnlId);
-      journalDB.find({ id: jnlId}, function(err, data) {
-        var dx = data[0];
-        console.log('Populating-2', err, data, dx.raw);
-
-        //data is the entire journal entry
-        //We want raw; for now, href the whole thing
-        //TODO add an image for the href
-        theLink = "<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>";
-        newLinks.push(theLink);
-        console.log('Populating-3', err, newLinks);
-
+    //var jnlId;
+ 
+    console.info("StartBacks", backlinks.length);
+    const promises = [];
+    backlinks.forEach((jnlId)=>{
+      const promise = new Promise((resolve, reject) => {
+        journalDB.find({ id: jnlId}, (err, data) => {
+          if (data) {
+            var dx = data[0];
+            console.log('Populating-2', err, data, dx.raw);
+    
+            //data is the entire journal entry
+            //We want raw; for now, href the whole thing
+            //TODO add an image for the href
+            resolve("<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>");
+          } else {
+            console.error("error", err);
+            reject(err);
+          }
+        });
       });
-      topic.backlinks = newLinks;
-      console.info('Populated', topic);
-      
+      promises.push(promise);
     });
-    return callback(true);
-
+    console.log('PX', promises);
+    return Promise.allSettled(promises).then((newLinks)=>{
+      const links = newLinks.filter(x=>x.status == 'fulfilled').map(x=>x.value);
+      console.log("promise.all", links);
+      topic.backlinks = links;
+      return callback(null, topic);
+    });
   };
 
   /**
@@ -141,8 +151,8 @@ JournalModel = function() {
         json.bodylist.push(body);
         json.id = uid;
         //process the topics
-        TopicModel.processTopic(subject, subjectSlug, url, triple, uid, userId, userHandle);
-        TopicModel.processTopic(object, objectSlug, url, triple, uid, userId, userHandle);
+        TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
+        TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
         var predlabel = subject+" "+predicate+" "+object;
         TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                     subject, subjectSlug,
@@ -162,8 +172,8 @@ JournalModel = function() {
     } else {
       json.id = uid;
       //process the topics
-      TopicModel.processTopic(subject, subjectSlug, url, triple, uid, userId, userHandle);
-      TopicModel.processTopic(object, objectSlug, url, triple, uid, userId, userHandle);
+      TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
+      TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
       var predlabel = subject+" "+predicate+" "+object;
       TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
@@ -202,10 +212,9 @@ JournalModel = function() {
    */
   self.getTopic = function(id, callback) {
     topicDB.get(id, function(err, data) {
-      self.populateBacklinks(data, function(done) {
-        return callback(err, data);
+      self.populateBacklinks(data, function(err, topic) {
+        return callback(err, topic);
       });
-      
     });
   };
 

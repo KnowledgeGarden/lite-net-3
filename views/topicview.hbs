@@ -1,3 +1,12 @@
+<style>
+  #mypara {
+    width: 800px; border-style: solid; border: 1px solid green;
+  }
+  #mypara:hover {
+    background-color: rgba(255, 255, 0, 0.801);
+  }
+</style>
+
 {{#if source}}
     <h2>Relation: {{label}}</h2>
 {{else}}
@@ -16,9 +25,9 @@
     <h3>Body</h3>
     <div style="overflow-y: auto; height:200px;">
     {{#each bodylist}}
-            <p>
+        <div id="mypara">
             {{{this}}}
-            </p><br/>
+        </div><br/>
         {{/each}}
     </div>
 {{/if}}
@@ -29,9 +38,11 @@
     {{/each}}
 {{/if}}
 <h3>Backlinks</h3>
-<div style="overflow-y: auto; height:200px;">
+<div style="overflow-y: auto; height:400px;">
     {{#each backlinks}}
-        <li>{{{this}}}</li>
+        <div id="mypara">
+            {{{this}}}
+        </div><br/>
     {{/each}}
 </div>
 <div style="display: none;">{{jsonSource}}</div>

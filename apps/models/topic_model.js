@@ -80,15 +80,22 @@ TopicModel = function() {
    * @param userHandle
    */
   self.processTopic = function(term, slug, url, content, id, userId, userHandle) {
-    console.info("ProcessTopic", term, slug, url, id);
+    console.info("ProcessTopic", term, slug, '|', content, '|', url, id);
     topicDB.get(slug, function(err, data) {
       console.info('ProcessTopic-1', err, data);
       if (data) {
-        self.updateTopic(slug, url, content, function(err) {
-          topicDB.addBacklink(slug, id, function(err) {
-            console.info("ABL", err);
+        console.info('ProcessTopic-1a', content);
+        if (content) {
+          self.updateTopic(slug, url, content, function(err) {
+            topicDB.addBacklink(slug, id, function(err) {
+              console.info("ABL", err);
+            });
           });
-        });
+        } else {
+          topicDB.addBacklink(slug, id, function(err) {
+            console.info("ABL-1", err);
+          });
+        }
       } else {
         var json = {};
         if (slug.startsWith('TOP')) {
