@@ -58,7 +58,7 @@ Linker = function() {
    * Returns the revised text (with hrefs, if any) and a list
    * of topics and their slugs found, if any
    * @param text 
-   * @param callback {data, topiclist}
+   * @param callback {err, data, topiclist}
    */
   self.resolveWikiLinks = function(text, callback) {
     console.info('LINKER', text);
@@ -75,26 +75,30 @@ Linker = function() {
     while (begin > -1) {
       begin += 2;
       end = text.indexOf("]]", begin);
-      term = text.substring(begin, end).trim();
-      console.info('LINKER-1', begin, end, term, text);
-      term = self.cleanTerm(term);
-      //ALL wikilinks are to Topics
-      slug = 'TOP_'+slugUtil.toSlug(term);
-      // add href to result
-      result += self.getHref(term, slug)+" ";
-      jsonT = {};
-      jsonT.label = term;
-      jsonT.slug = slug;
-      topiclist.push(jsonT);
-      end += 2;
-      begin = text.indexOf("[[", end);
-      console.info('LINKER-2', begin, end, term, text);
-      if (begin === -1 && (end) < text.length) {
-        //add remainder, if any
-        result += text.substring(end);
+      if (end > -1) {
+        term = text.substring(begin, end).trim();
+        console.info('LINKER-1', begin, end, term, text);
+        term = self.cleanTerm(term);
+        //ALL wikilinks are to Topics
+        slug = 'TOP_'+slugUtil.toSlug(term);
+        // add href to result
+        result += self.getHref(term, slug)+" ";
+        jsonT = {};
+        jsonT.label = term;
+        jsonT.slug = slug;
+        topiclist.push(jsonT);
+        end += 2;
+        begin = text.indexOf("[[", end);
+        console.info('LINKER-2', begin, end, term, text);
+        if (begin === -1 && (end) < text.length) {
+          //add remainder, if any
+          result += text.substring(end);
+        } else {
+          //add gap from last end+2
+          result += text.substring((end), begin)+" ";
+        }
       } else {
-        //add gap from last end+2
-        result += text.substring((end), begin)+" ";
+        return callback("Open Wikilink with improper or no Closing Wikilink-missing ]]");
       }
     }
     if (result === "") {

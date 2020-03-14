@@ -133,7 +133,10 @@ JournalModel = function() {
     }
     json.bodylist = [];
     if (notes) {
-      linker.resolveWikiLinks(notes, function(body, topiclist) {
+      linker.resolveWikiLinks(notes, function(err, body, topiclist) {
+        if (err) {
+          return (err, null, null);
+        }
         json.bodylist.push(body);
         json.id = uid;
         //process the topics
@@ -268,7 +271,10 @@ JournalModel = function() {
   self.newAIR = function(content, url, userId, userHandle, callback) {
     var json = {};
     json.raw = content;
-    linker.resolveWikiLinks(content, function(body, topiclist) {
+    linker.resolveWikiLinks(content, function(err, body, topiclist) {
+      if (err) {
+        return callback(err);
+      }
       var uid = 'JNL_'+uuid.v4();
       json.id = uid;
       json.userId = userId;
