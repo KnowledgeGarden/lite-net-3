@@ -1,6 +1,5 @@
 "use strict";
 var toSlug = require('../slug');
-var JournalModel = require('./journal_model');
 
 class Linker {
 

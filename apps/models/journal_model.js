@@ -78,7 +78,6 @@ class JournalModel {
    * @param topic
    */
   async populateBacklinks(topic) {
-    await this.init();
     console.info('Populating', topic);
     var backlinks = topic.backlinks;
     var theLink;
@@ -122,7 +121,6 @@ class JournalModel {
    */
   async processTriple(subject, predicate, object, url, notes,
                                 userId, userHandle) {
-    await this.init();
     var uid = 'JNL_'+uuid.v4();
     var json = {};
     var subjectSlug = 'TOP_'+toSlug(subject);
@@ -183,7 +181,6 @@ class JournalModel {
   }
 
   async listByURL(url) {
-    await this.init();
     return await journalDB.findByURL(url);
   };
 
@@ -192,7 +189,6 @@ class JournalModel {
    * TODO needs pagination
    */
   async list() {
-    await this.init();
     return await journalDB.list();
   };
 
@@ -201,13 +197,11 @@ class JournalModel {
    * @param id 
    */
   async getTopic(id) {
-    await this.init();
     const data = await topicDB.get(id);
     return await this.populateBacklinks(data);
   };
 
   async ajaxFindLabel(q) {
-    await this.init();
     console.log('JournalAjax', q);
     return await TopicModel.ajaxFindLabel(q);
   };
@@ -216,7 +210,6 @@ class JournalModel {
    * @param id 
    */
   async getJournalEntry(id) {
-    await this.init();
     console.info("NM-GJ", id);
     return await journalDB.get(id);
   };
@@ -229,7 +222,6 @@ class JournalModel {
    * @param url optional
    */
   async updateTopic(id, url, body) {
-    await this.init();
     return await topicDB.updateTopic(id, url, body);
   };
 
@@ -258,7 +250,6 @@ class JournalModel {
    * @param userHandle
    */
   async newAIR(content, url, userId, userHandle) {
-    await this.init();
     var json = {};
     json.raw = content;
     console.info('NewAirJnl-1', content, url);
@@ -292,4 +283,8 @@ class JournalModel {
 }
 
 const instance = new JournalModel();
-module.exports = instance;
+async function getJournalModel() {
+  await instance.init();
+  return instance;
+}
+module.exports = getJournalModel;

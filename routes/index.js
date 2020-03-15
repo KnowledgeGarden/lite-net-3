@@ -3,7 +3,7 @@ var express = require('express');
 var helper = require('./helper');
 var router = express.Router();
 
-var JournalModel = require('../apps/models/journal_model');
+var getJournalModel = require('../apps/models/journal_model');
 var AdminModel = require('../apps/models/admin_model');
 
 var config = require('../config/config');
@@ -110,6 +110,7 @@ router.get('/ajax/label', async function(req, res, next) {
   var q = req.query.query;
   console.info('Ajax', q);
   try {
+    const JournalModel = await getJournalModel();
     const data = await JournalModel.ajaxFindLabel(q);
     return res.json(data);
   } catch (err) {
@@ -122,6 +123,7 @@ router.get('/ajax/label', async function(req, res, next) {
 router.get('/', helper.isPrivate, async function(req, res, next) {
   validatePredicates();
   try {
+    const JournalModel = await getJournalModel();
     const noteList = await JournalModel.list();
     var data = baseData(req);
     data.predicates = predicates;
@@ -142,6 +144,7 @@ router.get('/iframe', async function(req, res, next) {
   var url = req.query.fName;
   console.info('IFRAME', url);
   try {
+    const JournalModel = await getJournalModel();
     const hits = await JournalModel.listByURL(url);
     var data = baseData(req);
     data.predicates = predicates;
@@ -187,6 +190,7 @@ router.post('/postAtriple', async function(req, res, next) {
   var usrId = req.session.theUserId;
   console.info('PostTriple', subject, predicate, object, url, notes);
   try {
+    const JournalModel = await getJournalModel();
     const dat = await JournalModel.processTriple(subject, predicate, object, url, notes,
                                usrId, usr);
     console.log('BigTriple', dat);
@@ -214,6 +218,7 @@ router.post('/posttopic', async function(req, res, next) {
   var usr = req.session.theUser;
   var usrId = req.session.theUserId;
   console.info("PostTopic", id, parentId, url, body);
+  const JournalModel = await getJournalModel();
   if (!id && !parentId && body) {
     try {
       const data = await JournalModel.newAIR(body, url, usrId, usr);
@@ -241,6 +246,7 @@ router.get('/topic/:id', helper.isPrivate, async function(req, res, next) {
   var id = req.params.id;
   console.info("GetTopic", id);
   try {
+    const JournalModel = await getJournalModel();
     const data = await JournalModel.getTopic(id);
     console.info("GetTopic-2", data);
     var json = data;
@@ -261,6 +267,7 @@ router.get('/journal/:id', helper.isPrivate, async function(req, res, next) {
   var id = req.params.id;
   console.info("GetJournal", id);
   try {
+    const JournalModel = await getJournalModel();
     const data = await JournalModel.getJournalEntry(id);
     data.title = config.banner;
     data.canSignup = config.canSignup;
