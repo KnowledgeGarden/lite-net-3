@@ -57,9 +57,9 @@ class Bootstrap {
    */
   async validateUserDB() {
     console.debug('validateUserDB');
-    const truth = await userDB.isEmpty();
-    console.info('BootstrapCheck', truth);
-    if (!truth) {
+    const empty = await userDB.isEmpty();
+    console.info('BootstrapCheck', empty);
+    if (!empty) {
       await AdminModel.signup(
         owner.email,
         owner.handle,
@@ -80,4 +80,7 @@ class Bootstrap {
 };
 
 const instance = new Bootstrap();
-module.exports = instance;
+async function bootstrap() {
+  await instance.bootstrap();
+}
+module.exports = bootstrap;

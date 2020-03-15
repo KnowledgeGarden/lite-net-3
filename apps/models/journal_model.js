@@ -50,7 +50,6 @@
 */
 var journalDB = require('../journal_database');
 var TopicModel = require('./topic_model');
-var bootstrap = require('../bootstrap');
 
 var topicDB = require('../topic_database');
 var uuid = require('uuid');
@@ -60,19 +59,6 @@ var linker = require('./linker');
  * JournalModel provides a kind of DSL for the platform
  */
 class JournalModel {
-
-  constructor() {
-    //validate user database and other bootstrap functions
-    this.inited = false;
-  }
-
-  async init() {
-    if (!this.inited) {
-      await bootstrap.bootstrap();
-      this.inited = true;
-    }
-  }
-
   /**
    * For a given {@code topic}, populate its backlinks
    * @param topic
@@ -283,8 +269,4 @@ class JournalModel {
 }
 
 const instance = new JournalModel();
-async function getJournalModel() {
-  await instance.init();
-  return instance;
-}
-module.exports = getJournalModel;
+module.exports = instance;
