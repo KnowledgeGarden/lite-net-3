@@ -85,26 +85,22 @@ class JournalModel {
     //var jnlId;
  
     console.info("StartBacks", backlinks.length);
-    const promises = [];
-    backlinks.forEach((jnlId)=>{
-      const promise = new Promise((resolve, reject) => {
-        journalDB.find({ id: jnlId}, (err, data) => {
-          if (data) {
-            var dx = data[0];
-            console.log('Populating-2', err, data, dx.raw);
-    
-            //data is the entire journal entry
-            //We want raw; for now, href the whole thing
-            //TODO add an image for the href
-            resolve("<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>");
-          } else {
-            console.error("error", err);
-            reject(err);
-          }
-        });
-      });
-      promises.push(promise);
-    });
+    const promises = backlinks.map((jnlId)=>
+      new Promise(async (resolve, reject) => {
+        try {
+          const data = await journalDB.find({ id: jnlId});
+          var dx = data[0];
+          console.log('Populating-2', data, dx.raw);
+  
+          //data is the entire journal entry
+          //We want raw; for now, href the whole thing
+          //TODO add an image for the href
+          resolve("<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>");
+        } catch (err) {
+          console.error("error", err);
+          reject(err);
+        }
+      }));
     console.log('PX', promises);
     const newLinks = await Promise.allSettled(promises);
     const links = newLinks.filter(x=>x.status == 'fulfilled').map(x=>x.value);
