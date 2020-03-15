@@ -1,135 +1,96 @@
-var Datastore = require('nedb')
-var Database;
-var instance;
+"use strict";
+var Datastore = require('nedb-promises')
 
-Database = function() {
-  var db = new Datastore({ filename: './data/topics' , autoload: true });
-  console.info('Database '+db);
-  var self = this;
+class Database {
+  constructor() {
+    this.db = new Datastore({ filename: './data/topics' , autoload: true });
+    console.info('Database '+this.db);
+  }
 
   /**
    * Insert a topic
    * @param jsonDoc the topic
-   * @param callback { err, newDoc }
    */
-  self.put = function(jsonDoc, callback) {
-    db.insert(jsonDoc, function (err, newDoc) {
-      return callback(err, newDoc);
-    });
+  async put(jsonDoc) {
+    return await this.db.insert(jsonDoc);
   };
 
   /**
    * @param id 
    * @parm backlink
-   * @param callback { err }
    */
-  self.addBacklink = function(id, backlink, callback) {
-    db.update({ id: id }, { $push: { backlinks: backlink } }, {}, function (err) {
-      return callback(err);
-    });
+  async addBacklink(id, backlink) {
+    return await this.db.update({ id: id }, { $push: { backlinks: backlink } });
   };
 
   /**
    * For compacting as needed
    */
-  self.compact = function() {
-    db.persistence.compactDatafile(function(erx) {
-      return callback(erx);
-    });
+  async compact() {
+    return await this.db.persistence.compactDatafile();
   };
 
   /**
    * Remove a topic identified by <code>_id</code>
    * @param _id 
-   * @param callback { err, numRemoved }
    */
-  self.delete = function(_id, callback) {
-    db.remove({ _id: _id }, {}, function (err, numRemoved) {
-        return callback(err, numRemoved);
-    });
+  async delete(_id) {
+    return await this.db.remove({ _id: _id });
   };
 
   /**
    * @param id 
-   * @param callback { err, data}
    */
-  self.get = function(id, callback) {
-    db.findOne({ id: id }, function (err, doc) {
-      console.info("FindTopic", err, doc);
-      return callback(err, doc);
-    });
+  async get(id) {
+    return await this.db.findOne({ id: id });
   };
 
   /**
    * General find support
    * @param query json
-   * @param callback { err, data }
    */
-  self.find = function(query, callback) {
+  async find(query) {
     console.info('TDB', query);
-    db.find(query, function(err, data) {
-      return callback(err, data);
-    });
+    return await this.db.find(query);
   };
 
   /**
    * Find topics by URL
    * @param url
-   * @param callback { err, data }
    */
-  self.findByURL = function(url, callback) {
-    self.find({ url: url }, function(err, data) {
-      console.info('FindByUrl', err, data);
-      return callback(err, data);
-    });
+  async findByURL(url) {
+    return await this.find({ url: url });
   };
 
   /**
    * Replace a topic
    * @param newTopic
-   * @param callback { err, numRep }
    */
-  self.replaceBacklinks = function(_id, backlinks, callback) {
-    db.update({ _id: _id }, {$set:{ backlinks: backlinks }}, {}, function(err, numRep) {
-      console.info('ReplaceBacklinks', _id, backlinks, err, numRep);
-      db.persistence.compactDatafile(function(erx) {
-        return callback(erx, numRep);
-      });
-      
-    });
+  async replaceBacklinks(_id, backlinks) {
+    numRep = await this.db.update({ _id: _id }, {$set:{ backlinks: backlinks }});
+    console.info('ReplaceBacklinks', _id, backlinks, numRep);
+    await this.db.persistence.compactDatafile();
+    return numRep;
   };
 
   /**
    * Add in either {@code url}, or {@code body} or both
    * @param url  can be {@code null}
    * @param body can be {@code null}
-   * @param callback { err }
    */
-  self.updateTopic = function(id, url, body, callback) {
+  async updateTopic(id, url, body) {
     //TODO rewrite this to avoid duplicates
     if (url) {
-      db.update({ id: id }, { $push: { urllist: url } }, {}, function (err) {
-        if (body) {
-          db.update({ id: id }, { $push: { bodylist: body } }, {}, function (err) {
-            return callback(err);
-          });
-        } else {
-          return callback(err);
-        }
-      });
+      await this.db.update({ id: id }, { $push: { urllist: url } }, {});
+      await this.db.update({ id: id }, { $push: { bodylist: body } }, {});
     } else if (body) {
-      db.update({ id: id }, { $push: { bodylist: body } }, {}, function (err) {
-        return callback(err);
-      });
+      await this.db.update({ id: id }, { $push: { bodylist: body } }, {});
     } else {
-      console.error('TopicDatabas.updateTopic got nothing ', id);
-      return callback(null); //really, this is a dumb error: nothing sent here
+      throw new Error('TopicDatabas.updateTopic got nothing ', id);
     }
   };
-  
+
 };
 
-if (!instance) {
-  instance = new Database();
-}
+const instance = new Database();
 module.exports = instance;

@@ -1,10 +1,8 @@
+"use strict";
 /* @author park */
 var config = require('../config/config');
-var Helper,
-    instance;
 
-Helper = function() {
-    var self = this;
+class Helper {
     //console.log("HELPER");
 
     /**
@@ -13,7 +11,7 @@ Helper = function() {
      * @param {*} which 
      * @return
      */
-    self.checkIP = function(req, which) {
+    checkIP(req, which) {
         var ip = 
          req.connection.remoteAddress || 
          req.socket.remoteAddress || 
@@ -22,7 +20,7 @@ Helper = function() {
         return ip;
     };
 
-    self.isPrivate = function (req, res, next) {
+    isPrivate(req, res, next) {
         if (config.isPrivatePortal) {
             if (self.isAuthenticated(req)) {
                 return next();
@@ -65,16 +63,16 @@ Helper = function() {
      * @param {*} userId 
      * @param {*} node 
      */
-    self.canEdit = function(userId, node) {
+    canEdit(userId, node) {
         return (userId === node.creatorId);
     };
     
-    self.canDelete = function(userId, node) {
+    canDelete(userId, node) {
         var hasIBISkids = CommonModel.hasIBISChildren(node);
         return (self.canEdit(userId, node) && !hasIBISkids);
     };
 
-    self.isAuthenticated = function(req) {
+    isAuthenticated(req) {
 //        console.log("Helper.isAuthenticated",req.session);
         if (req.session.theUser) {
             return true;
@@ -86,21 +84,18 @@ Helper = function() {
      * @param req
      * @param {*} callback truth
      */
-    self.isAdmin = function(req, callback) {
+    async isAdmin(req) {
         var email = req.session.theUserEmail;
-        AdminModel.checkIsAdmin(email, function(truth) {
-            console.log("Helper.isAdmin",truth);
-            return callback(truth);
-        });
+        return await AdminModel.checkIsAdmin(email);
     };
 
-    self.logout = function(req) {
+    logout(req) {
         //DO NOTHING FOR NOW
         req.session.theUser = null;
     };
 
-};
-if (!instance) {
-    instance = new Helper();
 }
+
+
+const instance = new Helper();
 module.exports = instance;

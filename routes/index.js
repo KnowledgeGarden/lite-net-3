@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var helper = require('./helper');
 var router = express.Router();
@@ -63,64 +64,65 @@ router.get('/logout', function(req, res, next) {
   return res.redirect('/');
 });
 
-router.post('/signup', function(req, res, next) {
+router.post('/signup', async function(req, res, next) {
   var email = req.body.email,
       handle = req.body.handle,
       fullName = req.body.fullname,
       pwd = req.body.password;
-  AdminModel.signup(email, handle, fullName, pwd, function(err) {
+  try {
+    await AdminModel.signup(email, handle, fullName, pwd);
     console.log("Index.post",email,err);
-    if (!err) {
-      req.flash("success", "Signup succeeded");
-      return res.redirect('/');
-    } else {
-      console.log("Index.post-2");
-      req.flash("error", "Signup Problem: "+err);
-      return res.redirect('/');       
-    }
-  });
+    req.flash("success", "Signup succeeded");
+    return res.redirect('/');
+  } catch (err) {
+    console.log("Index.post-2");
+    req.flash("error", "Signup Problem: "+err);
+    return res.redirect('/');       
+  }
 });
 
-router.post('/login', function(req, res, next) {
+router.post('/login', async function(req, res, next) {
   var email = req.body.email,
-      password = req.body.password;
-      //ip =  helper.checkIP(req, "login", "signup");
-  AdminModel.authenticate(email, password, function(err, truth, handle, userId) {
-    console.info("Authenticate", err, truth, handle, userId);
-    if (err) {
-      req.flash("error", err);
-    }
-    if (truth) {
-      req.session.theUser = handle;
-      req.session.theUserId = userId;
-      req.session.theUserEmail = email;
-      console.info("Authentication passed");
-      req.flash("success", "Login succeeded");
-      return res.redirect('/');
-    } else {
-      console.info("Authentication failed");
-      req.flash("error", "Login failed");
-      return res.redirect('/');
-    }
-  });
+    password = req.body.password;
+  //ip =  helper.checkIP(req, "login", "signup");
+  try {
+    const {success, handle, userId} = await AdminModel.authenticate(email, password);
+    console.info("Authenticate", success, handle, userId);
+    req.session.theUser = handle;
+    req.session.theUserId = userId;
+    req.session.theUserEmail = email;
+    console.info("Authentication passed");
+    req.flash("success", "Login succeeded");
+    return res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    console.info("Authentication failed");
+    req.flash("error", "Login failed");
+    return res.redirect('/');
+  }
 });
 //////////////////////////
 
 /**
  * Ajax for typeahead
  */
-router.get('/ajax/label', function(req, res, next) {
+router.get('/ajax/label', async function(req, res, next) {
   var q = req.query.query;
   console.info('Ajax', q);
-  JournalModel.ajaxFindLabel(q, function(err, data) {
+  try {
+    const data = await JournalModel.ajaxFindLabel(q);
     return res.json(data);
-  });
+  } catch (err) {
+    console.error(err);
+    return res.redirect('/');
+  }
 });
 
 /* GET home page. */
-router.get('/', helper.isPrivate, function(req, res, next) {
+router.get('/', helper.isPrivate, async function(req, res, next) {
   validatePredicates();
-  JournalModel.list(function(err, noteList) {
+  try {
+    const noteList = await JournalModel.list();
     var data = baseData(req);
     data.predicates = predicates;
     console.info('IP3', predicates.terms[0]);
@@ -129,21 +131,27 @@ router.get('/', helper.isPrivate, function(req, res, next) {
     }
     data.noteList = noteList;
     return res.render('index', data);
-  });
+  } catch (err) {
+    console.error(err);
+    return res.redirect('/');
+  }
 });
 
-router.get('/iframe', function(req, res, next) {
+router.get('/iframe', async function(req, res, next) {
   validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
-  JournalModel.listByURL(url, function(err, hits) {
+  try {
+    const hits = await JournalModel.listByURL(url);
     var data = baseData(req);
     data.predicates = predicates;
     data.url = url;
     data.hits = hits;
     return res.render('iframe', data);
-  });
-  
+  } catch (err) {
+    console.error(err);
+    return res.redirect('/');
+  }
 });
 
 router.get('/new_note_route', function(req, res, next) {
@@ -169,7 +177,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
   return res.render('index', data);
 });
 
-router.post('/postAtriple', function(req, res, next) {
+router.post('/postAtriple', async function(req, res, next) {
   var subject = req.body.subject;
   var predicate = req.body.predicate;
   var object = req.body.object;
@@ -178,17 +186,16 @@ router.post('/postAtriple', function(req, res, next) {
   var usr = req.session.theUser;
   var usrId = req.session.theUserId;
   console.info('PostTriple', subject, predicate, object, url, notes);
-  
-  JournalModel.processTriple(subject, predicate, object, url, notes,
-                             usrId, usr, function(err, dat) {
-    if (err) {
-      req.flash("error", err);
-      return res.redirect('/');
-    } else {                   
-      console.log('BigTriple', dat);
-      return res.redirect('/journal/'+dat.id);
-    } 
-  });
+  try {
+    const dat = await JournalModel.processTriple(subject, predicate, object, url, notes,
+                               usrId, usr);
+    console.log('BigTriple', dat);
+    return res.redirect('/journal/'+dat.id);
+  } catch (err) {
+    console.error(err);
+    req.flash("error", err);
+    return res.redirect('/');
+  }
 });
 
 /**
@@ -199,7 +206,7 @@ router.post('/postAtriple', function(req, res, next) {
  * c: (future) A topic is a fresh text AIR but is a child
  *  node to another topic - a conversation tree node
  */
-router.post('/posttopic', function(req, res, next) {
+router.post('/posttopic', async function(req, res, next) {
   var body = req.body.body;
   var id = req.body.topicid;
   var parentId = req.body.parentid;
@@ -208,61 +215,62 @@ router.post('/posttopic', function(req, res, next) {
   var usrId = req.session.theUserId;
   console.info("PostTopic", id, parentId, url, body);
   if (!id && !parentId && body) {
-    JournalModel.newAIR(body, url, usrId, usr, function(err, data) {
-      console.info('NewAirIndex', err)
-      if (err) {
-        req.flash("error", err);
-        return res.redirect('/');
-      } else {
-        return res.redirect('/journal/'+data.id);
-      }
-    });
+    try {
+      const data = await JournalModel.newAIR(body, url, usrId, usr);
+      return res.redirect('/journal/'+data.id);
+    } catch (err) {
+      console.error(err);
+      req.flash("error", err);
+      return res.redirect('/');
+    }
   } else if (body || url) { // NOTE ignoring parentId for now
-    JournalModel.updateTopic(id, url, body, function(err) {
+    try {
+      await JournalModel.updateTopic(id, url, body);
+      return res;
+    } catch (err) {
+      console.error(err);
       return res.redirect('/topic/'+id);
-    });
+    }
   } else {
     //bad post - for now
     return res.redirect('/');
   }
 });
 
-router.get('/topic/:id', helper.isPrivate, function(req, res, next) {
+router.get('/topic/:id', helper.isPrivate, async function(req, res, next) {
   var id = req.params.id;
   console.info("GetTopic", id);
-  JournalModel.getTopic(id, function(err, data) {
+  try {
+    const data = await JournalModel.getTopic(id);
     console.info("GetTopic-2", data);
-    if (data) {
-      var json = data;
-      json.title = config.banner;
-      json.canSignup = config.canSignup;
-      json.isAuthenticated = helper.isAuthenticated(req);
+    var json = data;
+    json.title = config.banner;
+    json.canSignup = config.canSignup;
+    json.isAuthenticated = helper.isAuthenticated(req);
 
-      json.jsonSource = JSON.stringify(data);
-      return res.render('topicview', json);
-    } else {
-      req.flash("error", "Cannot find Topic: "+id);
-      return res.redirect('/');
-    }
-  });
+    json.jsonSource = JSON.stringify(data);
+    return res.render('topicview', json);
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Cannot find Topic: "+id);
+    return res.redirect('/');
+  }
 });
 
-router.get('/journal/:id', helper.isPrivate, function(req, res, next) {
+router.get('/journal/:id', helper.isPrivate, async function(req, res, next) {
   var id = req.params.id;
   console.info("GetJournal", id);
-  JournalModel.getJournalEntry(id, function(err, data) {
-    if (data) {
-      data.title = config.banner;
-      data.canSignup = config.canSignup;
-      console.info("GetJournal-1", data);
-      return res.render('journalview', data);
-    } else {
-      req.flash("error", "Cannot find Journal: "+id);
-      return res.redirect('/');
-    }
-  });
+  try {
+    const data = await JournalModel.getJournalEntry(id);
+    data.title = config.banner;
+    data.canSignup = config.canSignup;
+    console.info("GetJournal-1", data);
+    return res.render('journalview', data);
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Cannot find Journal: "+id);
+    return res.redirect('/');
+  }
 });
-
-
 
 module.exports = router;

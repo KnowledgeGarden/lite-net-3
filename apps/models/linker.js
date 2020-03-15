@@ -1,18 +1,15 @@
-var slugUtil = require('../slug');
+"use strict";
+var toSlug = require('../slug');
 var JournalModel = require('./journal_model');
 
-var Linker;
-var instance;
-
-Linker = function() {
-  var self = this;
+class Linker {
 
   /**
    * A term might be surrounded with html, e.g. <b>, <i>
    * @param term 
    * @returns cleaned up term
    */
-  self.cleanTerm = function(term) {
+  cleanTerm(term) {
     if (term.startsWith('<')) {
       var result = term;
       var where = result.indexOf('>');
@@ -35,7 +32,7 @@ Linker = function() {
    * @param term 
    * @return href
    */
-  self.getHref = function(term, slug) {
+  getHref(term, slug) {
     
     var result = "<a href=\"/topic/"+slug+"\">"+term+"</a>";
     return result;
@@ -58,9 +55,8 @@ Linker = function() {
    * Returns the revised text (with hrefs, if any) and a list
    * of topics and their slugs found, if any
    * @param text 
-   * @param callback {err, data, topiclist}
    */
-  self.resolveWikiLinks = function(text, callback) {
+  resolveWikiLinks(text) {
     console.info('LINKER', text);
     var topiclist = []; // topic is a json object with label and slug
     var result = "";
@@ -80,11 +76,11 @@ Linker = function() {
       if (end > -1) { // end found
         term = text.substring(begin, end).trim();
         console.info('LINKER-1', begin, end, term, text);
-        term = self.cleanTerm(term);
+        term = this.cleanTerm(term);
         //ALL wikilinks are to Topics
-        slug = 'TOP_'+slugUtil.toSlug(term);
+        slug = 'TOP_'+toSlug(term);
         // add href to result
-        result += self.getHref(term, slug)+" ";
+        result += this.getHref(term, slug)+" ";
         jsonT = {};
         jsonT.label = term;
         jsonT.slug = slug;
@@ -100,13 +96,13 @@ Linker = function() {
           result += text.substring((end), begin)+" ";
         }
       } else { // proper end not found - error condition
-        return callback("Open Wikilink with improper or no Closing Wikilink-missing ]]");
+        throw new Error("Open Wikilink with improper or no Closing Wikilink-missing ]]");
       }
     }
     if (result === "") { // if nothing found, just return the text
       result = text;
     }
-    return callback(null, result.trim(), topiclist);
+    return {body: result.trim(), topiclist};
   };
 
   /**
@@ -119,7 +115,7 @@ Linker = function() {
    * @param pSlug
    * @return
    */
-  self.setHrefs = function(subject, sSlug, object, oSlug, predicate, pSlug) {
+  setHrefs(subject, sSlug, object, oSlug, predicate, pSlug) {
     var result = "";
     var sHref = "<a href=\"/topic/"+sSlug+"\">"+subject+"</a>";
     var oHref = "<a href=\"/topic/"+oSlug+"\">"+object+"</a>";
@@ -132,8 +128,5 @@ Linker = function() {
   
 };
 
-if (!instance) {
-  instance = new Linker();
-}
-
+const  instance = new Linker();
 module.exports = instance;

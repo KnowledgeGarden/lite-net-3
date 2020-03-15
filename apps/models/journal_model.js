@@ -1,3 +1,4 @@
+"use strict";
 /*
 {"id":"foo","label":"Foo","date":{"$$date":1582755161331},"backlinks":["<a href=\"/journal/290432fa-2e6f-4a46-abb9-1861cd17314d\">Foo causes Bar</a>","<a href=\"/journal/cb51650d-5aa6-41e1-95d9-15fb4e87292e\">Foo isA Blah</a>"],"_id":"cxo7mAtA67NaTa06","bodylist":["Foo is a crucial topic in the domain of nonsense."]}
 
@@ -53,28 +54,33 @@ var bootstrap = require('../bootstrap');
 
 var topicDB = require('../topic_database');
 var uuid = require('uuid');
-var slugUtil = require('../slug');
+var toSlug = require('../slug');
 var linker = require('./linker');
-var JournalModel,
-    instance;
 /**
  * JournalModel provides a kind of DSL for the platform
  */
-JournalModel = function() {
-  var self = this;
-  //validate user database and other bootstrap functions
-  bootstrap.bootstrap();
+class JournalModel {
 
+  constructor() {
+    //validate user database and other bootstrap functions
+    this.inited = false;
+  }
+
+  async init() {
+    if (!this.inited) {
+      await bootstrap.bootstrap();
+      this.inited = true;
+    }
+  }
 
   /**
    * For a given {@code topic}, populate its backlinks
    * @param topic
-   * @param callback { done }
    */
-  self.populateBacklinks = function(topic, callback) {
+  async populateBacklinks(topic) {
+    await this.init();
     console.info('Populating', topic);
     var backlinks = topic.backlinks;
-    var newLinks = [];
     var theLink;
     //var jnlId;
  
@@ -100,12 +106,11 @@ JournalModel = function() {
       promises.push(promise);
     });
     console.log('PX', promises);
-    return Promise.allSettled(promises).then((newLinks)=>{
-      const links = newLinks.filter(x=>x.status == 'fulfilled').map(x=>x.value);
-      console.log("promise.all", links);
-      topic.backlinks = links;
-      return callback(null, topic);
-    });
+    const newLinks = await Promise.allSettled(promises);
+    const links = newLinks.filter(x=>x.status == 'fulfilled').map(x=>x.value);
+    console.log("promise.all", links);
+    topic.backlinks = links;
+    return topic;
   };
 
   /**
@@ -118,15 +123,15 @@ JournalModel = function() {
    * @param notes
    * @param userId
    * @param userHandle
-   * @param callback {err, dat}
    */
-  self.processTriple = function(subject, predicate, object, url, notes,
-                                userId, userHandle, callback) {
+  async processTriple(subject, predicate, object, url, notes,
+                                userId, userHandle) {
+    await this.init();
     var uid = 'JNL_'+uuid.v4();
     var json = {};
-    var subjectSlug = 'TOP_'+slugUtil.toSlug(subject);
-    var objectSlug = 'TOP_'+slugUtil.toSlug(object);
-    var predicateSlug = 'TOP_'+subjectSlug+slugUtil.toSlug(predicate)+objectSlug;
+    var subjectSlug = 'TOP_'+toSlug(subject);
+    var objectSlug = 'TOP_'+toSlug(object);
+    var predicateSlug = 'TOP_'+subjectSlug+toSlug(predicate)+objectSlug;
     var triple = subject+" "+predicate+" "+object;
     json.raw = subject+' '+predicate+' '+object;
     json.text = linker.setHrefs(subject, subjectSlug, object, objectSlug, predicate, predicateSlug);
@@ -143,99 +148,81 @@ JournalModel = function() {
     }
     json.bodylist = [];
     if (notes) {
-      linker.resolveWikiLinks(notes, function(err, body, topiclist) {
-        console.info('ProcessTriple-1', err, body, topiclist);
-        if (err) {
-          return (err, null, null);
-        }
-        json.bodylist.push(body);
-        json.id = uid;
-        //process the topics
-        TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
-        TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
-        var predlabel = subject+" "+predicate+" "+object;
-        TopicModel.processPredicate(predlabel, predicateSlug, predicate,
-                                    subject, subjectSlug,
-                                    object, objectSlug,
-                                    url, triple, uid, userId, userHandle);
-        // persist the journal entry
-        journalDB.put(json, function(err, dat) {
-          console.info("ProcessTriple", err, dat);
-          var len = topiclist.length;
-          console.info("PT-1", err, dat, len, topiclist);
-          if (len > 0) {
-            self.processTopics(topiclist, url, null, uid, userId, userHandle);
-          } 
-          return callback(err, dat);
-        });
-      });
-    } else {
+      const {body, topiclist} = linker.resolveWikiLinks(notes);
+      console.info('ProcessTriple-1', body, topiclist);
+      json.bodylist.push(body);
       json.id = uid;
       //process the topics
       TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
       TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
       var predlabel = subject+" "+predicate+" "+object;
-      TopicModel.processPredicate(predlabel, predicateSlug, predicate,
+      await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
                                   object, objectSlug,
                                   url, triple, uid, userId, userHandle);
       // persist the journal entry
-      journalDB.put(json, function(err, dat) {
-        console.info("ProcessTriple", err, dat);
-        return callback(err, dat);
-      });
+      const dat = await journalDB.put(json);
+      console.info("ProcessTriple", dat);
+      var len = topiclist.length;
+      console.info("PT-1", dat, len, topiclist);
+      if (len > 0) {
+        await this.processTopics(topiclist, url, null, uid, userId, userHandle);
+      }
+      return dat;
+    } else {
+      json.id = uid;
+      //process the topics
+      await TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
+      await TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
+      var predlabel = subject+" "+predicate+" "+object;
+      await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
+                                  subject, subjectSlug,
+                                  object, objectSlug,
+                                  url, triple, uid, userId, userHandle);
+      // persist the journal entry
+      const dat = await journalDB.put(json);
+      console.info("ProcessTriple", dat);
+      return dat;
     }
+  }
 
-  };
-
-  self.listByURL = function(url, callback) {
-    journalDB.findByURL(url, function(err, data) {
-      return callback(err, data);
-    });
+  async listByURL(url) {
+    await this.init();
+    return await journalDB.findByURL(url);
   };
 
   /**
    * List journal entries
    * TODO needs pagination
-   * @param callback { err, data }
    */
-  self.list = function(callback) {
-    journalDB.list(function(err, data) {
-      return callback(err, data);
-    });
+  async list() {
+    await this.init();
+    return await journalDB.list();
   };
 
   /**
    * Return a topic identified by <code>id</code>
    * @param id 
-   * @param { err, data }
    */
-  self.getTopic = function(id, callback) {
-    topicDB.get(id, function(err, data) {
-      self.populateBacklinks(data, function(err, topic) {
-        return callback(err, topic);
-      });
-    });
+  async getTopic(id) {
+    await this.init();
+    const data = await topicDB.get(id);
+    return await this.populateBacklinks(data);
   };
 
-  self.ajaxFindLabel = function(q, callback) {
+  async ajaxFindLabel(q) {
+    await this.init();
     console.log('JournalAjax', q);
-    TopicModel.ajaxFindLabel(q, function(err, data) {
-      console.info('JMajax', err, data);
-      return callback(err, data);
-    });
+    return await TopicModel.ajaxFindLabel(q);
   };
   /**
    * Return a specific journal entry identified by <code>id</code>
    * @param id 
-   * @param callback { err, data }
    */
-  self.getJournalEntry = function(id, callback) {
+  async getJournalEntry(id) {
+    await this.init();
     console.info("NM-GJ", id);
-    journalDB.get(id, function(err, data) {
-      console.info("NM-GJ-1", err, data);
-      return callback(err, data);
-    });
+    return await journalDB.get(id);
   };
 
   /**
@@ -244,24 +231,21 @@ JournalModel = function() {
    * @param id 
    * @param body the AIR
    * @param url optional
-   * @param callback { err }
    */
-  self.updateTopic = function(id, url, body, callback) {
-    
-    topicDB.updateTopic(id, url, body, function(err) {
-      return callback(err);
-    });
+  async updateTopic(id, url, body) {
+    await this.init();
+    return await topicDB.updateTopic(id, url, body);
   };
 
   
-  self.processTopics = function(topiclist, url, text, id, userId, userHandle) {
+  async processTopics(topiclist, url, text, id, userId, userHandle) {
     console.info('ProcessTopics', topiclist, id, text);
     var json;
     var i;
     for (i in topiclist) {
       json = topiclist[i];
       console.info('PT-1', json);
-      TopicModel.processTopic(json.label, 
+      await TopicModel.processTopic(json.label, 
                               json.slug,
                               url,
                               text,
@@ -276,47 +260,40 @@ JournalModel = function() {
    * @param url optional
    * @param userId
    * @param userHandle
-   * @param callback { err, data }
    */
-  self.newAIR = function(content, url, userId, userHandle, callback) {
+  async newAIR(content, url, userId, userHandle) {
+    await this.init();
     var json = {};
     json.raw = content;
     console.info('NewAirJnl-1', content, url);
-    linker.resolveWikiLinks(content, function(err, body, topiclist) {
-      console.info('NewAirJnl-2', err, body, topiclist);
-      if (err) {
-        return callback(err);
-      }
-      var uid = 'JNL_'+uuid.v4();
-      json.id = uid;
-      json.userId = userId;
-      json.userHandle = userHandle;
-      json.text = body;
-      json.date = new Date();
-      if (url) {
-        var ul = [];
-        ul.push(url);
-        json.urllist = ul;
-      }
-      // we now have an AIR ready to persist
-      // and possible a list of topics to process
-      journalDB.put(json, function(err, dat) {
-        var len = topiclist.length;
-        console.info("newAIR", err, dat, len, topiclist);
-        if (len > 0) {
-          console.info("newAir-1");
-          self.processTopics(topiclist, url, null, uid, userId, userHandle);
-          return callback(err, dat);
-        } else {
-          console.info('newAir-2');
-          return callback(err, dat);
-        }
-      });
-    });
-  };
-};
-
-if (!instance) {
-  instance = new JournalModel();
+    const {body, topiclist} = linker.resolveWikiLinks(content);
+    console.info('NewAirJnl-2', body, topiclist);
+    var uid = 'JNL_'+uuid.v4();
+    json.id = uid;
+    json.userId = userId;
+    json.userHandle = userHandle;
+    json.text = body;
+    json.date = new Date();
+    if (url) {
+      var ul = [];
+      ul.push(url);
+      json.urllist = ul;
+    }
+    // we now have an AIR ready to persist
+    // and possible a list of topics to process
+    const dat = await journalDB.put(json);
+    var len = topiclist.length;
+    console.info("newAIR", dat, len, topiclist);
+    if (len > 0) {
+      console.info("newAir-1");
+      await this.processTopics(topiclist, url, null, uid, userId, userHandle);
+      return dat;
+    } else {
+      console.info('newAir-2');
+      return dat;
+    }
+  }
 }
+
+const instance = new JournalModel();
 module.exports = instance;

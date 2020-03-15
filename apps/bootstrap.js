@@ -1,15 +1,15 @@
+"use strict";
 var owner = require('../config/owner');
 var userDB = require('./user_database');
 var topicDB = require('./topic_database');
 var AdminModel = require('./models/admin_model');
-var Bootstrap;
-var instance;
 
-Bootstrap = function() {
-  var self = this;
-  console.info("Bootstrap-1", AdminModel);
+class Bootstrap {
+  constructor() {
+    console.info("Bootstrap-1", AdminModel);
+  }
 
-  self.migrateTransclusions = function(callback) {
+  async migrateTransclusions() {
     console.info('Migrating Transclusions');
     //Not using this
     //For every href entry in backlinks array
@@ -49,44 +49,35 @@ Bootstrap = function() {
       });
      
     });*/
-    return callback(true);
-    
+    return true;
   };
 
   /**
    * @param { done }
    */
-  self.validateUserDB = function(callback) {
-    userDB.isEmpty(function(truth) {
-      console.info('BootstrapCheck', truth);
-      if (!truth) {
-        AdminModel.signup(
-          owner.email,
-          owner.handle,
-          owner.fullName,
-          owner.password, function(err) {
-            console.log('Bootstrapped');
-            return callback(true);
-          });
-      } else {
-        console.log('Not Bootstrapped');
-        return callback(true);
-      }
-    });
+  async validateUserDB() {
+    console.debug('validateUserDB');
+    const truth = await userDB.isEmpty();
+    console.info('BootstrapCheck', truth);
+    if (!truth) {
+      await AdminModel.signup(
+        owner.email,
+        owner.handle,
+        owner.fullName,
+        owner.password);
+    } else {
+      console.log('Not Bootstrapped');
+    }
+    return true;
   };
 
-  self.bootstrap = function() {
-    self.validateUserDB(function(done) {
-      self.migrateTransclusions(function(did) {
-        return;
-      });
-    });
+  async bootstrap() {
+    console.debug('bootstrap');
+    const done = await this.validateUserDB();
+    return await this.migrateTransclusions();
   };
 
 };
 
-if (!instance) {
-  instance = new Bootstrap();
-}
-
+const instance = new Bootstrap();
 module.exports = instance;

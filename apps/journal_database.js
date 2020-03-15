@@ -1,74 +1,53 @@
-var Datastore = require('nedb')
-var Database;
-var instance;
+"use strict";
+const Datastore = require('nedb-promises')
 
-Database = function() {
-  var db = new Datastore({ filename: './data/journal' , autoload: true });
-  console.info('Database '+db);
-  var self = this;
+class Database {
+  constructor() {
+    this.db = new Datastore({ filename: './data/journal' , autoload: true });
+    console.info('Database '+this.db);
+  }
 
   /**
    * Insert a journal entry
    * @param jsonDoc 
-   * @param callback { err, newdoc }
    */
-  self.put = function(jsonDoc, callback) {
-    db.insert(jsonDoc, function (err, newDoc) {
-      console.log("JournalPut", err, newDoc);
-      return callback(err, newDoc);
-    });
-  };
+  async put(jsonDoc) {
+    return await this.db.insert(jsonDoc);
+  }
 
   /**
    * Return a journal entry identified by <code>id</code>
    * @param id 
-   * @param callback { err, data }
    */
-  self.get = function(id, callback) {
-    db.findOne({ id: id }, function (err, doc) {
-      console.info("FindJournal", err, doc);
-      return callback(err, doc);
-    });
-  };
+  async get(id) {
+    return await this.db.findOne({ id: id });
+  }
 
   /**
    * Return a list of journal entries sorted on date latest on top
-   * @param callback { err, data }
    */
-  self.list = function(callback) {
-    db.find({}).sort({ date: -1 }).exec(function (err, data) {
-      console.info('NoteList', err, data);
-      return callback(err, data);
-    });
-  };
+  async list() {
+    return await this.db.find({}).sort({ date: -1 });
+  }
 
     /**
    * General find support
    * @param query json
-   * @param callback { err, data }
    */
-  self.find = function(query, callback) {
+  async find(query) {
     console.info('JnlFind', query);
-    db.find(query, function(err, data) {
-      return callback(err, data);
-    });
-  };
+    return await this.db.find(query);
+  }
 
   /**
    * Find topics by URL
    * @param url
-   * @param callback { err, data }
    */
-  self.findByURL = function(url, callback) {
-    self.find({ urllist: url }, function(err, data) {
-      console.info('JnlFindByUrl', err, data);
-      return callback(err, data);
-    });
-  };
+  async findByURL(url) {
+    return await this.find({ urllist: url });
+  }
 
 };
 
-if (!instance) {
-  instance = new Database();
-}
+const instance = new Database();
 module.exports = instance;

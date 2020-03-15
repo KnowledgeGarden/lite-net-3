@@ -1,12 +1,15 @@
+"use strict";
 var userDB = require('../user_database');
 var uuid = require('uuid');
 var bcrypt = require('bcrypt-nodejs');
-var instance;
-var AdminModel;
+const util = require('util');
 
-AdminModel = function() {
-  var self = this;
+class AdminModel {
 
+  constructor() {
+    this.hash = util.promisify(bcrypt.hash);
+    this.compare = util.promisify(bcrypt.compare);
+  }
 
   /**
    * Register a new account
@@ -14,54 +17,38 @@ AdminModel = function() {
    * @param handle
    * @param fullName
    * @param password
-   * @param callback { err }
    */
-  self.signup = function(email, handle, fullName, password, callback) {
+  async signup(email, handle, fullName, password) {
     console.info("Signup", email, handle, fullName);
-    bcrypt.hash(password, null, null, function(err, hash) {
-        var uStruct = {};
-        uStruct.id = uuid.v4();
-        uStruct.pwd = hash;
-        uStruct.email = email;
-        uStruct.handle = handle;
-        uStruct.fullName = fullName;
-        console.log("AdminModel.signup",uStruct);
-        userDB.saveAccount(uStruct, function(err) {
-            if (!err) {
-                //TODO future feature
-                //UserModel.newUser(constants.SYSTEM_USER, constants.SYSTEM_USER, uStruct.id, uStruct.handle, function(err) {
-                    return callback(err);
-                //});
-            } else {
-                return callback(err);
-            }
-        });
+    const hash = await this.hash(password, null, null);
+    console.info("Signup 2", hash);
+    const account = await userDB.saveAccount({
+        id: uuid.v4(),
+        pwd: hash,
+        email: email,
+        handle: handle,
+        fullName: fullName,
     });
+    console.info("Signup 3", account);
+    return account
   };
 
   /**
    * Authenticate a user
    * @param email
    * @param password
-   * @param callback { err, truth, handle, id }
    */
-  self.authenticate = function(email, password, callback) {
+  async authenticate(email, password) {
     console.log("AdminModel.authenticate", email, password);
-    userDB.fetchAccount(email, function(err, json) {
-        console.log("AdminModel.authenticate-1", email, json, err);
-        if (json) {
-            bcrypt.compare(password, json.pwd, function(err1, res) {
-                return callback(err1, res, json.handle, json.id);
-            });
-        } else {
-            return callback("Authentication issue: "+err, false, null, null);
-        }
-
-    });
-};
-};
-
-if (!instance) {
-  instance = new AdminModel();
+    const json = await userDB.fetchAccount(email);
+    console.log("AdminModel.authenticate-1", email, json);
+    if (!json) {
+        throw new Error("No account for "+email);
+    }
+    const success = await this.compare(password, json.pwd);
+    return {success, handle: json.handle, userId: json.id};
+  }
 }
+
+const instance = new AdminModel();
 module.exports = instance;
