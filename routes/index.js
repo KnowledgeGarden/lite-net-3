@@ -214,7 +214,6 @@ router.post('/posttopic', async function(req, res, next) {
   var usr = req.session.theUser;
   var usrId = req.session.theUserId;
   console.info("PostTopic", id, parentId, url, body);
-  const JournalModel = await getJournalModel();
   if (!id && !parentId && body) {
     try {
       const data = await JournalModel.newAIR(body, url, usrId, usr);
