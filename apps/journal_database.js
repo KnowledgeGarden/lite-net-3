@@ -20,7 +20,7 @@ class Database {
    * @param id 
    */
   async get(id) {
-    return await this.db.findOne({ id: id });
+    return await this.db.findOne({ id });
   }
 
   /**
@@ -42,9 +42,9 @@ class Database {
   async updateJournalText(id, newText, isTriple) {
     console.info('JnlUpdateText', id, newText);
     if (!isTriple) {
-      return await this.db.update( { id: id}, { $set: { text: newText} },{});
+      return await this.db.update( { id}, { $set: { text: newText} },{});
     } else {
-      return await this.db.update( { id: id}, { $set: { notes: newText} },{});
+      return await this.db.update( { id}, { $set: { notes: newText} },{});
     }
   }
 

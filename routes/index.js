@@ -10,7 +10,7 @@ var config = require('../config/config');
 var predicates;
 var hbs = require('hbs');
 
-hbs.registerHelper('toJSON', function(obj) {
+hbs.registerHelper('toJSON', obj => {
   return JSON.stringify(obj, null);
 });
 
@@ -37,18 +37,18 @@ function validatePredicates() {
 // User Accounts
 /////////////////////
 
-router.get('/signup', function(req, res, next) {
+router.get('/signup', (req, res, next) => {
   var data = baseData(req);
   return res.render('signup_form', data);
 });
 
-router.get('/login', function(req, res, next) {
+router.get('/login', (req, res, next) => {
   console.info("login");
   var data = baseData(req);
   return res.render('login_form', data);
 });
 
-router.get('/logout', function(req, res, next) {
+router.get('/logout', (req, res, next) => {
   var struct = {};
   req.session.theUser = null;
   req.session.theUserId = null;
@@ -56,11 +56,11 @@ router.get('/logout', function(req, res, next) {
   return res.redirect('/');
 });
 
-router.post('/signup', async function(req, res, next) {
-  var email = req.body.email,
-      handle = req.body.handle,
-      fullName = req.body.fullname,
-      pwd = req.body.password;
+router.post('/signup', async (req, res, next) => {
+  var email = req.body.email;
+  var handle = req.body.handle;
+  var fullName = req.body.fullname;
+  var pwd = req.body.password;
   try {
     await AdminModel.signup(email, handle, fullName, pwd);
     console.log("Index.post",email,err);
@@ -73,9 +73,9 @@ router.post('/signup', async function(req, res, next) {
   }
 });
 
-router.post('/login', async function(req, res, next) {
-  var email = req.body.email,
-    password = req.body.password;
+router.post('/login', async (req, res, next) => {
+  var email = req.body.email;
+  var password = req.body.password;
   //ip =  helper.checkIP(req, "login", "signup");
   try {
     const {success, handle, userId} = await AdminModel.authenticate(email, password);
@@ -98,7 +98,7 @@ router.post('/login', async function(req, res, next) {
 /**
  * Ajax for typeahead
  */
-router.get('/ajax/label', async function(req, res, next) {
+router.get('/ajax/label', async (req, res, next) => {
   var q = req.query.query;
   console.info('Ajax', q);
   try {
@@ -111,7 +111,7 @@ router.get('/ajax/label', async function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/', helper.isPrivate, async function(req, res, next) {
+router.get('/', helper.isPrivate, async (req, res, next) => {
   validatePredicates();
   try {
     const noteList = await JournalModel.list();
@@ -129,7 +129,7 @@ router.get('/', helper.isPrivate, async function(req, res, next) {
   }
 });
 
-router.get('/iframe', async function(req, res, next) {
+router.get('/iframe', async (req, res, next) => {
   validatePredicates();
   var url = req.query.fName;
   console.info('IFRAME', url);
@@ -146,7 +146,7 @@ router.get('/iframe', async function(req, res, next) {
   }
 });
 
-router.get('/new_note_route', function(req, res, next) {
+router.get('/new_note_route', (req, res, next) => {
   console.info('NEW');
   var noteList = [];
   var x = {};
@@ -169,7 +169,7 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
   return res.render('index', data);
 });*/
 
-router.post('/postAtriple', async function(req, res, next) {
+router.post('/postAtriple', async (req, res, next) => {
   var subject = req.body.subject;
   var predicate = req.body.predicate;
   var object = req.body.object;
@@ -198,7 +198,7 @@ router.post('/postAtriple', async function(req, res, next) {
  * c: (future) A topic is a fresh text AIR but is a child
  *  node to another topic - a conversation tree node
  */
-router.post('/posttopic', async function(req, res, next) {
+router.post('/posttopic', async (req, res, next) => {
   var body = req.body.body;
   var id = req.body.topicid;
   var parentId = req.body.parentid;
@@ -229,7 +229,7 @@ router.post('/posttopic', async function(req, res, next) {
   }
 });
 
-router.post('/postjournaledit', async function(req, res, next) {
+router.post('/postjournaledit', async (req, res, next) => {
   var body = req.body.body;
   var id = req.body.id;
   var usr = req.session.theUser;
@@ -246,7 +246,7 @@ router.post('/postjournaledit', async function(req, res, next) {
   }
 });
 
-router.get('/topic/:id', helper.isPrivate, async function(req, res, next) {
+router.get('/topic/:id', helper.isPrivate, async (req, res, next) => {
   var id = req.params.id;
   console.info("GetTopic", id);
   try {
@@ -266,7 +266,7 @@ router.get('/topic/:id', helper.isPrivate, async function(req, res, next) {
   }
 });
 
-router.get('/journal/:id', helper.isPrivate, async function(req, res, next) {
+router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
   var id = req.params.id;
   var userId = req.session.theUserId;
   console.info("GetJournal", id);
@@ -284,7 +284,7 @@ router.get('/journal/:id', helper.isPrivate, async function(req, res, next) {
   }
 });
 
-router.get('/journaledit/:id', async function(req, res, next) {
+router.get('/journaledit/:id', async (req, res, next) => {
   var id = req.params.id;
   var userId = req.session.theUserId;
 

@@ -29,7 +29,7 @@ class UserDatabase {
    * @param email
    */
   async fetchAccount(email) {
-    return await this.db.findOne({ email: email });
+    return await this.db.findOne({ email });
   }
 }
 

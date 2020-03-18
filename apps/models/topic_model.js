@@ -169,8 +169,8 @@ class TopicModel {
     var json = {};
     var lx = [];
     
-    for (var i=0; i<docs.length; i++) {
-      lx.push(docs[i].label);
+    for (var doc in docs) {
+      lx.push(doc.label);
     }
     json.options = lx;
     return json;

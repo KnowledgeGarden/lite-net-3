@@ -25,9 +25,9 @@ class AdminModel {
     const account = await userDB.saveAccount({
         id: uuid.v4(),
         pwd: hash,
-        email: email,
-        handle: handle,
-        fullName: fullName,
+        email,
+        handle,
+        fullName,
     });
     console.info("Signup 3", account);
     return account
