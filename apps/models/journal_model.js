@@ -12,6 +12,7 @@
     backlinks: list of backlink hrefs ** Changing to list of Journal IDs
     bodylist: list of text objects, each of which becomes an AIR journal entry
        - has been processed for wikilinks and other items
+       - in a topic, bodylist is an array
     urllist: list of URLs associated with this topic
     sourceId: relations only
     targetId: relations only
@@ -45,7 +46,8 @@
     pred: triple journal entry only
     obj: triple journal entry only
     urllist: urls if any
-    notes: triple journal entry only
+    //notes: triple journal entry only
+    bodylist: a single text object in a journal entry
   }
 */
 const journalDB = require('../journal_database');
@@ -126,11 +128,11 @@ class JournalModel {
       ul.push(url);
       json.urllist = ul;
     }
-    json.bodylist = [];
+    //json.bodylist = [];
     if (notes) {
       const {body, topiclist} = linker.resolveWikiLinks(notes);
       console.info('ProcessTriple-1', body, topiclist);
-      json.bodylist.push(body);
+      json.bodylist = body; //push(body);
       json.id = uid;
       //process the topics
       TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
@@ -212,7 +214,13 @@ class JournalModel {
   };
 
   async updateJournalEntry(id, content, userId, userHandle, isTriple) {
+    console.info("JournalModel.updateJournalEntry", isTriple);
     const {body, topiclist} = linker.resolveWikiLinks(content);
+    const jnl = await journalDB.get(id);
+    var notes = jnl.notes;
+    if (notes) {
+
+    }
     await journalDB.updateJournalText(id, body, isTriple);
     if (topiclist.length > 0) {
       console.info("updateJournal-1");

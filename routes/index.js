@@ -232,12 +232,13 @@ router.post('/posttopic', async (req, res, next) => {
 router.post('/postjournaledit', async (req, res, next) => {
   const body = req.body.body;
   const id = req.body.id;
+  const isTriple = req.body.istriple;
   const usr = req.session.theUser;
   const usrId = req.session.theUserId;
   //var url = req.body.url;
-  console.info('JournalEdit', id, body);
+  console.info('JournalEdit', id, body, isTriple);
   try {
-    await JournalModel.updateJournalEntry(id, body, usrId, usr);
+    await JournalModel.updateJournalEntry(id, body, usrId, usr, isTriple);
     return res.redirect(`/journal/${id}`);
   } catch (err) {
     console.error(err);
@@ -275,6 +276,13 @@ router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
     data.title = config.banner;
     data.canEdit = userId === data.userId;
     data.canSignup = config.canSignup;
+    //migration from array to single string
+    var bl = data.bodylist;
+    if (bl && Array.isArray(bl)) {
+      //heritage installations have just one entry
+      // convert it back to a single string
+      data.bodylist = bl[0];
+    }
     console.info("GetJournal-1", data);
     return res.render('journalview', data);
   } catch (err) {
@@ -286,8 +294,7 @@ router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
 
 router.get('/journaledit/:id', async (req, res, next) => {
   const id = req.params.id;
-  const userId = req.session.theUserId;
-
+  
   try {
     const data = await JournalModel.getJournalEntry(id);
     const subj = data.subj;
@@ -296,8 +303,13 @@ router.get('/journaledit/:id', async (req, res, next) => {
       isTriple = false;
       data.texttoedit = data.raw;
     } else {
-      data.texttoedit = data.notes;
+      var bl = data.bodylist;
+      if (bl && Array.isArray(bl)) {
+        bl = bl[0];
+      }
+      data.texttoedit = bl;
     }
+    data.isTriple = isTriple;
     data.title = config.banner;
     data.canSignup = config.canSignup;
     return res.render('journal_edit_form', data);
