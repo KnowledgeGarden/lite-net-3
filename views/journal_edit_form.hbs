@@ -1,0 +1,16 @@
+<script>
+    $( document ).ready(function() {
+        var editor = new MediumEditor('.richarea');
+    });
+</script>
+
+<div style="margin-top: 60px;">
+  <h3>Journal Editor</h3>
+  <form id="jeForm" method="POST" action="/postjournaledit">
+      <input type="hidden" name="id" value="{{id}}">
+      <textarea class="richarea" placeholder="Begin typing" name="body" rows="4" cols="94">{{{texttoedit}}}</textarea><br/>
+      <!--<input id="urlfield" name="url" placeholder="url" type="text" value="{{url}}" style='width:20em'><br/>-->
+
+      <button type="submit" class="btn btn-secondary" form="jeForm">Submit</button>
+  </form>
+</div>

@@ -211,7 +211,18 @@ class JournalModel {
     return await topicDB.updateTopic(id, url, body);
   };
 
-  
+  async updateJournalEntry(id, content, userId, userHandle, isTriple) {
+    const {body, topiclist} = linker.resolveWikiLinks(content);
+    await journalDB.updateJournalText(id, body, isTriple);
+    if (topiclist.length > 0) {
+      console.info("updateJournal-1");
+      await this.processTopics(topiclist, null, null, id, userId, userHandle);
+      return;
+    } else {
+      return;
+    }
+  };
+
   async processTopics(topiclist, url, text, id, userId, userHandle) {
     console.info('ProcessTopics', topiclist, id, text);
     var json;

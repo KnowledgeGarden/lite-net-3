@@ -39,6 +39,15 @@ class Database {
     return await this.db.find(query);
   }
 
+  async updateJournalText(id, newText, isTriple) {
+    console.info('JnlUpdateText', id, newText);
+    if (!isTriple) {
+      return await this.db.update( { id: id}, { $set: { text: newText} },{});
+    } else {
+      return await this.db.update( { id: id}, { $set: { notes: newText} },{});
+    }
+  }
+
   /**
    * Find topics by URL
    * @param url

@@ -1,5 +1,8 @@
 <h2>Journal Entry</h2>
 <p>
+  {{#if canEdit}}
+    <a href="/journaledit/{{id}}">Edit  </a>
+  {{/if}}
   {{date}}<br/>
   {{{text}}}<br/>
   {{#if urllist}}

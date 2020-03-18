@@ -27,15 +27,7 @@ function validatePredicates() {
   if (!predicates) {
     var whichvocab = config.vocabulary;
     whichvocab = "../config/vocab/"+whichvocab+"/labels";
-    //var datapath = path.join(__dirname, whichvocab);
-    //var f = fs.readFileSync(datapath, 'utf8');
     predicates =  require(whichvocab);
-    /*var terms = predicates.terms;
-    var x = [];
-    for (var i = 0; i< terms.length; i++) {
-      x.push(terms[i]);
-    }
-    predicates = x;*/
     console.info('IndexPreds', predicates);
     console.info('IP2', predicates.terms[0]);
   }
@@ -169,13 +161,13 @@ router.get('/new_note_route', function(req, res, next) {
 
 /**
  * Get page identified by its slug
- */
+ * /
 router.get('/:id', helper.isPrivate, function(req, res, next) {
   var id = req.params.id;
   var data = baseData(req);
   data.id = id;
   return res.render('index', data);
-});
+});*/
 
 router.post('/postAtriple', async function(req, res, next) {
   var subject = req.body.subject;
@@ -226,13 +218,30 @@ router.post('/posttopic', async function(req, res, next) {
   } else if (body || url) { // NOTE ignoring parentId for now
     try {
       await JournalModel.updateTopic(id, url, body);
-      return res;
+      return res.redirect('/topic/'+id);
     } catch (err) {
       console.error(err);
       return res.redirect('/topic/'+id);
     }
   } else {
     //bad post - for now
+    return res.redirect('/');
+  }
+});
+
+router.post('/postjournaledit', async function(req, res, next) {
+  var body = req.body.body;
+  var id = req.body.id;
+  var usr = req.session.theUser;
+  var usrId = req.session.theUserId;
+  //var url = req.body.url;
+  console.info('JournalEdit', id, body);
+  try {
+    await JournalModel.updateJournalEntry(id, body, usrId, usr);
+    return res.redirect('/journal/'+id);
+  } catch (err) {
+    console.error(err);
+    req.flash("Error saving edited Journal: "+id);
     return res.redirect('/');
   }
 });
@@ -259,16 +268,42 @@ router.get('/topic/:id', helper.isPrivate, async function(req, res, next) {
 
 router.get('/journal/:id', helper.isPrivate, async function(req, res, next) {
   var id = req.params.id;
+  var userId = req.session.theUserId;
   console.info("GetJournal", id);
   try {
     const data = await JournalModel.getJournalEntry(id);
     data.title = config.banner;
+    data.canEdit = userId === data.userId;
     data.canSignup = config.canSignup;
     console.info("GetJournal-1", data);
     return res.render('journalview', data);
   } catch (err) {
     console.error(err);
     req.flash("error", "Cannot find Journal: "+id);
+    return res.redirect('/');
+  }
+});
+
+router.get('/journaledit/:id', async function(req, res, next) {
+  var id = req.params.id;
+  var userId = req.session.theUserId;
+
+  try {
+    const data = await JournalModel.getJournalEntry(id);
+    var subj = data.subj;
+    var isTriple = true;
+    if (!subj) {
+      isTriple = false;
+      data.texttoedit = data.raw;
+    } else {
+      data.texttoedit = data.notes;
+    }
+    data.title = config.banner;
+    data.canSignup = config.canSignup;
+    return res.render('journal_edit_form', data);
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Cannot find Journal to edit: "+id);
     return res.redirect('/');
   }
 });

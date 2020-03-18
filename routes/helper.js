@@ -64,7 +64,7 @@ class Helper {
      * @param {*} node 
      */
     canEdit(userId, node) {
-        return (userId === node.creatorId);
+        return (userId === node.userId);
     };
     
     canDelete(userId, node) {
