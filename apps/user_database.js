@@ -1,5 +1,5 @@
 "use strict";
-var Datastore = require('nedb-promises')
+const Datastore = require('nedb-promises');
 
 class UserDatabase {
   constructor() {

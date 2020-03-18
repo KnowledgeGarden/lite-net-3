@@ -1,21 +1,21 @@
 "use strict";
-var express = require('express');
-var helper = require('./helper');
-var router = express.Router();
+const express = require('express');
+const helper = require('./helper');
+const router = express.Router();
 
-var JournalModel = require('../apps/models/journal_model');
-var AdminModel = require('../apps/models/admin_model');
+const JournalModel = require('../apps/models/journal_model');
+const AdminModel = require('../apps/models/admin_model');
 
-var config = require('../config/config');
-var predicates;
-var hbs = require('hbs');
+const config = require('../config/config');
+let predicates;
+const hbs = require('hbs');
 
 hbs.registerHelper('toJSON', obj => {
   return JSON.stringify(obj, null);
 });
 
 function baseData(req) {
-  var data = {};
+  const data = {};
   data.title = config.banner;
   data.canSignup = config.canSignup;
   data.isAuthenticated = helper.isAuthenticated(req);
@@ -25,7 +25,7 @@ function baseData(req) {
 
 function validatePredicates() {
   if (!predicates) {
-    var whichvocab = config.vocabulary;
+    let whichvocab = config.vocabulary;
     whichvocab = "../config/vocab/"+whichvocab+"/labels";
     predicates =  require(whichvocab);
     console.info('IndexPreds', predicates);
@@ -38,18 +38,18 @@ function validatePredicates() {
 /////////////////////
 
 router.get('/signup', (req, res, next) => {
-  var data = baseData(req);
+  const data = baseData(req);
   return res.render('signup_form', data);
 });
 
 router.get('/login', (req, res, next) => {
   console.info("login");
-  var data = baseData(req);
+  const data = baseData(req);
   return res.render('login_form', data);
 });
 
 router.get('/logout', (req, res, next) => {
-  var struct = {};
+  const struct = {};
   req.session.theUser = null;
   req.session.theUserId = null;
   helper.logout(req);
@@ -57,10 +57,10 @@ router.get('/logout', (req, res, next) => {
 });
 
 router.post('/signup', async (req, res, next) => {
-  var email = req.body.email;
-  var handle = req.body.handle;
-  var fullName = req.body.fullname;
-  var pwd = req.body.password;
+  const email = req.body.email;
+  const handle = req.body.handle;
+  const fullName = req.body.fullname;
+  const pwd = req.body.password;
   try {
     await AdminModel.signup(email, handle, fullName, pwd);
     console.log("Index.post",email,err);
@@ -74,8 +74,8 @@ router.post('/signup', async (req, res, next) => {
 });
 
 router.post('/login', async (req, res, next) => {
-  var email = req.body.email;
-  var password = req.body.password;
+  const email = req.body.email;
+  const password = req.body.password;
   //ip =  helper.checkIP(req, "login", "signup");
   try {
     const {success, handle, userId} = await AdminModel.authenticate(email, password);
@@ -99,7 +99,7 @@ router.post('/login', async (req, res, next) => {
  * Ajax for typeahead
  */
 router.get('/ajax/label', async (req, res, next) => {
-  var q = req.query.query;
+  const q = req.query.query;
   console.info('Ajax', q);
   try {
     const data = await JournalModel.ajaxFindLabel(q);
@@ -115,7 +115,7 @@ router.get('/', helper.isPrivate, async (req, res, next) => {
   validatePredicates();
   try {
     const noteList = await JournalModel.list();
-    var data = baseData(req);
+    const data = baseData(req);
     data.predicates = predicates;
     console.info('IP3', predicates.terms[0]);
     if (req.flash) {
@@ -131,11 +131,11 @@ router.get('/', helper.isPrivate, async (req, res, next) => {
 
 router.get('/iframe', async (req, res, next) => {
   validatePredicates();
-  var url = req.query.fName;
+  const url = req.query.fName;
   console.info('IFRAME', url);
   try {
     const hits = await JournalModel.listByURL(url);
-    var data = baseData(req);
+    const data = baseData(req);
     data.predicates = predicates;
     data.url = url;
     data.hits = hits;
@@ -148,11 +148,11 @@ router.get('/iframe', async (req, res, next) => {
 
 router.get('/new_note_route', (req, res, next) => {
   console.info('NEW');
-  var noteList = [];
-  var x = {};
+  const noteList = [];
+  const x = {};
   x.details = '[[Foo]] causes [[Bar]]';
   noteList.push(x);
-  var data = baseData(req);
+  const data = baseData(req);
   data.title = config.banner;
   data.noteList = noteList;
   data.isNew = true;
@@ -170,13 +170,13 @@ router.get('/:id', helper.isPrivate, function(req, res, next) {
 });*/
 
 router.post('/postAtriple', async (req, res, next) => {
-  var subject = req.body.subject;
-  var predicate = req.body.predicate;
-  var object = req.body.object;
-  var url = req.body.url;
-  var notes = req.body.notes;
-  var usr = req.session.theUser;
-  var usrId = req.session.theUserId;
+  const subject = req.body.subject;
+  const predicate = req.body.predicate;
+  const object = req.body.object;
+  const url = req.body.url;
+  const notes = req.body.notes;
+  const usr = req.session.theUser;
+  const usrId = req.session.theUserId;
   console.info('PostTriple', subject, predicate, object, url, notes);
   try {
     const dat = await JournalModel.processTriple(subject, predicate, object, url, notes,
@@ -199,12 +199,12 @@ router.post('/postAtriple', async (req, res, next) => {
  *  node to another topic - a conversation tree node
  */
 router.post('/posttopic', async (req, res, next) => {
-  var body = req.body.body;
-  var id = req.body.topicid;
-  var parentId = req.body.parentid;
-  var url = req.body.url;
-  var usr = req.session.theUser;
-  var usrId = req.session.theUserId;
+  const body = req.body.body;
+  const id = req.body.topicid;
+  const parentId = req.body.parentid;
+  const url = req.body.url;
+  const usr = req.session.theUser;
+  const usrId = req.session.theUserId;
   console.info("PostTopic", id, parentId, url, body);
   if (!id && !parentId && body) {
     try {
@@ -230,10 +230,10 @@ router.post('/posttopic', async (req, res, next) => {
 });
 
 router.post('/postjournaledit', async (req, res, next) => {
-  var body = req.body.body;
-  var id = req.body.id;
-  var usr = req.session.theUser;
-  var usrId = req.session.theUserId;
+  const body = req.body.body;
+  const id = req.body.id;
+  const usr = req.session.theUser;
+  const usrId = req.session.theUserId;
   //var url = req.body.url;
   console.info('JournalEdit', id, body);
   try {
@@ -247,12 +247,12 @@ router.post('/postjournaledit', async (req, res, next) => {
 });
 
 router.get('/topic/:id', helper.isPrivate, async (req, res, next) => {
-  var id = req.params.id;
+  const id = req.params.id;
   console.info("GetTopic", id);
   try {
     const data = await JournalModel.getTopic(id);
     console.info("GetTopic-2", data);
-    var json = data;
+    const json = data;
     json.title = config.banner;
     json.canSignup = config.canSignup;
     json.isAuthenticated = helper.isAuthenticated(req);
@@ -267,8 +267,8 @@ router.get('/topic/:id', helper.isPrivate, async (req, res, next) => {
 });
 
 router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
-  var id = req.params.id;
-  var userId = req.session.theUserId;
+  const id = req.params.id;
+  const userId = req.session.theUserId;
   console.info("GetJournal", id);
   try {
     const data = await JournalModel.getJournalEntry(id);
@@ -285,13 +285,13 @@ router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
 });
 
 router.get('/journaledit/:id', async (req, res, next) => {
-  var id = req.params.id;
-  var userId = req.session.theUserId;
+  const id = req.params.id;
+  const userId = req.session.theUserId;
 
   try {
     const data = await JournalModel.getJournalEntry(id);
-    var subj = data.subj;
-    var isTriple = true;
+    const subj = data.subj;
+    let isTriple = true;
     if (!subj) {
       isTriple = false;
       data.texttoedit = data.raw;

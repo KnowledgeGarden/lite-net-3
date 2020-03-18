@@ -1,5 +1,5 @@
 "use strict";
-var topicDB = require('../topic_database');
+const topicDB = require('../topic_database');
 
 class TopicModel {
 
@@ -16,8 +16,8 @@ class TopicModel {
     const data = await topicDB.get(id);
     console.info('UpdateTopic-1', data);
     //update the topic using treating arrays as sets (no duplicates)
-    var somelist;
-    var madeChanges = false;
+    let somelist;
+    let madeChanges = false;
     if (url) {
       somelist = data.urllist;
       if (!somelist) {
@@ -82,7 +82,7 @@ class TopicModel {
         await topicDB.addBacklink(slug, id);
       }
     } else {
-      var json = {};
+      const json = {};
       if (slug.startsWith('TOP')) {
         json.id = slug;
       } else {
@@ -132,7 +132,7 @@ class TopicModel {
       await this.updateTopic(predicateSlug, url, content);
       await topicDB.addBacklink(predicateSlug, id);
     } else {
-      var json = {};
+      const json = {};
       if (predicateSlug.startsWith('TOP')) {
         json.id = predicateSlug;
       } else {
@@ -162,14 +162,14 @@ class TopicModel {
 
   async ajaxFindLabel(q) {
   
-    var rx = new RegExp(q, 'i');
+    const rx = new RegExp(q, 'i');
     console.info("TMajax", rx);
     const docs = await topicDB.find({ label: { $regex: rx } });
     console.info('AjaxFind', docs);
-    var json = {};
-    var lx = [];
+    const json = {};
+    const lx = [];
     
-    for (var doc in docs) {
+    for (const doc in docs) {
       lx.push(doc.label);
     }
     json.options = lx;

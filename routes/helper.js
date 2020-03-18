@@ -1,6 +1,6 @@
 "use strict";
 /* @author park */
-var config = require('../config/config');
+const config = require('../config/config');
 
 class Helper {
     //console.log("HELPER");
@@ -12,7 +12,7 @@ class Helper {
      * @return
      */
     checkIP(req, which) {
-        var ip = 
+        const ip = 
          req.connection.remoteAddress || 
          req.socket.remoteAddress || 
          req.connection.socket.remoteAddress;
@@ -68,7 +68,7 @@ class Helper {
     };
     
     canDelete(userId, node) {
-        var hasIBISkids = CommonModel.hasIBISChildren(node);
+        const hasIBISkids = CommonModel.hasIBISChildren(node);
         return (self.canEdit(userId, node) && !hasIBISkids);
     };
 
@@ -85,7 +85,7 @@ class Helper {
      * @param {*} callback truth
      */
     async isAdmin(req) {
-        var email = req.session.theUserEmail;
+        const email = req.session.theUserEmail;
         return await AdminModel.checkIsAdmin(email);
     };
 

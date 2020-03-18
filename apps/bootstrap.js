@@ -1,8 +1,8 @@
 "use strict";
-var owner = require('../config/owner');
-var userDB = require('./user_database');
-var topicDB = require('./topic_database');
-var AdminModel = require('./models/admin_model');
+const owner = require('../config/owner');
+const userDB = require('./user_database');
+const topicDB = require('./topic_database');
+const AdminModel = require('./models/admin_model');
 
 class Bootstrap {
   constructor() {

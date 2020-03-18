@@ -1,5 +1,5 @@
 "use strict";
-var toSlug = require('../slug');
+const toSlug = require('../slug');
 
 class Linker {
 
@@ -10,8 +10,8 @@ class Linker {
    */
   cleanTerm(term) {
     if (term.startsWith('<')) {
-      var result = term;
-      var where = result.indexOf('>');
+      let result = term;
+      let where = result.indexOf('>');
       if (where > -1) {
         result = result.substring((where+1));
         where = result.indexOf('<');
@@ -33,7 +33,7 @@ class Linker {
    */
   getHref(term, slug) {
     
-    var result = "<a href=\"/topic/"+slug+"\">"+term+"</a>";
+    const result = "<a href=\"/topic/"+slug+"\">"+term+"</a>";
     return result;
   };
   //////////////////////////////////
@@ -57,16 +57,16 @@ class Linker {
    */
   resolveWikiLinks(text) {
     console.info('LINKER', text);
-    var topiclist = []; // topic is a json object with label and slug
-    var result = "";
-    var begin = text.indexOf("[[");
+    const topiclist = []; // topic is a json object with label and slug
+    let result = "";
+    let begin = text.indexOf("[[");
     if (begin > -1) {
       result = text.substring(0, begin)+" ";
     }
-    var end = 0;
-    var term;
-    var slug;
-    var jsonT;
+    let end = 0;
+    let term;
+    let slug;
+    let jsonT;
     //loop if there is any [[ found
     while (begin > -1) {
       begin += 2;
@@ -115,10 +115,10 @@ class Linker {
    * @return
    */
   setHrefs(subject, sSlug, object, oSlug, predicate, pSlug) {
-    var result = "";
-    var sHref = "<a href=\"/topic/"+sSlug+"\">"+subject+"</a>";
-    var oHref = "<a href=\"/topic/"+oSlug+"\">"+object+"</a>";
-    var pHref = "<a href=\"/topic/"+pSlug+"\">"+predicate+"</a>";
+    let result = "";
+    const sHref = "<a href=\"/topic/"+sSlug+"\">"+subject+"</a>";
+    const oHref = "<a href=\"/topic/"+oSlug+"\">"+object+"</a>";
+    const pHref = "<a href=\"/topic/"+pSlug+"\">"+predicate+"</a>";
     result += sHref+" ";
     result += pHref+" ";
     result += " "+oHref;

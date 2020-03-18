@@ -48,13 +48,13 @@
     notes: triple journal entry only
   }
 */
-var journalDB = require('../journal_database');
-var TopicModel = require('./topic_model');
+const journalDB = require('../journal_database');
+const TopicModel = require('./topic_model');
 
-var topicDB = require('../topic_database');
-var uuid = require('uuid');
-var toSlug = require('../slug');
-var linker = require('./linker');
+const topicDB = require('../topic_database');
+const uuid = require('uuid');
+const toSlug = require('../slug');
+const linker = require('./linker');
 /**
  * JournalModel provides a kind of DSL for the platform
  */
@@ -65,8 +65,8 @@ class JournalModel {
    */
   async populateBacklinks(topic) {
     console.info('Populating', topic);
-    var backlinks = topic.backlinks;
-    var theLink;
+    const backlinks = topic.backlinks;
+    let theLink;
     //var jnlId;
  
     console.info("StartBacks", backlinks.length);
@@ -74,7 +74,7 @@ class JournalModel {
       new Promise(async (resolve, reject) => {
         try {
           const data = await journalDB.find({ id: jnlId});
-          var dx = data[0];
+          const dx = data[0];
           console.log('Populating-2', data, dx.raw);
   
           //data is the entire journal entry
@@ -107,12 +107,12 @@ class JournalModel {
    */
   async processTriple(subject, predicate, object, url, notes,
                                 userId, userHandle) {
-    var uid = 'JNL_'+uuid.v4();
-    var json = {};
-    var subjectSlug = 'TOP_'+toSlug(subject);
-    var objectSlug = 'TOP_'+toSlug(object);
-    var predicateSlug = 'TOP_'+subjectSlug+toSlug(predicate)+objectSlug;
-    var triple = subject+" "+predicate+" "+object;
+    const uid = 'JNL_'+uuid.v4();
+    const json = {};
+    const subjectSlug = 'TOP_'+toSlug(subject);
+    const objectSlug = 'TOP_'+toSlug(object);
+    const predicateSlug = 'TOP_'+subjectSlug+toSlug(predicate)+objectSlug;
+    const triple = subject+" "+predicate+" "+object;
     json.raw = subject+' '+predicate+' '+object;
     json.text = linker.setHrefs(subject, subjectSlug, object, objectSlug, predicate, predicateSlug);
     json.subj = subject;
@@ -122,7 +122,7 @@ class JournalModel {
     json.userId = userId;
     json.userHandle = userHandle;
     if (url) {
-      var ul = [];
+      const ul = [];
       ul.push(url);
       json.urllist = ul;
     }
@@ -135,7 +135,7 @@ class JournalModel {
       //process the topics
       TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
       TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
-      var predlabel = subject+" "+predicate+" "+object;
+      const predlabel = subject+" "+predicate+" "+object;
       await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
                                   object, objectSlug,
@@ -143,7 +143,7 @@ class JournalModel {
       // persist the journal entry
       const dat = await journalDB.put(json);
       console.info("ProcessTriple", dat);
-      var len = topiclist.length;
+      const len = topiclist.length;
       console.info("PT-1", dat, len, topiclist);
       if (len > 0) {
         await this.processTopics(topiclist, url, null, uid, userId, userHandle);
@@ -154,7 +154,7 @@ class JournalModel {
       //process the topics
       await TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
       await TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
-      var predlabel = subject+" "+predicate+" "+object;
+      const predlabel = subject+" "+predicate+" "+object;
       await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
                                   object, objectSlug,
@@ -225,8 +225,8 @@ class JournalModel {
 
   async processTopics(topiclist, url, text, id, userId, userHandle) {
     console.info('ProcessTopics', topiclist, id, text);
-    var json;
-    var i;
+    let json;
+    let i;
     for (i in topiclist) {
       json = topiclist[i];
       console.info('PT-1', json);
@@ -247,26 +247,26 @@ class JournalModel {
    * @param userHandle
    */
   async newAIR(content, url, userId, userHandle) {
-    var json = {};
+    const json = {};
     json.raw = content;
     console.info('NewAirJnl-1', content, url);
     const {body, topiclist} = linker.resolveWikiLinks(content);
     console.info('NewAirJnl-2', body, topiclist);
-    var uid = 'JNL_'+uuid.v4();
+    const uid = 'JNL_'+uuid.v4();
     json.id = uid;
     json.userId = userId;
     json.userHandle = userHandle;
     json.text = body;
     json.date = new Date();
     if (url) {
-      var ul = [];
+      const ul = [];
       ul.push(url);
       json.urllist = ul;
     }
     // we now have an AIR ready to persist
     // and possible a list of topics to process
     const dat = await journalDB.put(json);
-    var len = topiclist.length;
+    const len = topiclist.length;
     console.info("newAIR", dat, len, topiclist);
     if (len > 0) {
       console.info("newAir-1");

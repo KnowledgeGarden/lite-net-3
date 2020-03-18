@@ -1,7 +1,7 @@
 "use strict";
-var userDB = require('../user_database');
-var uuid = require('uuid');
-var bcrypt = require('bcrypt-nodejs');
+const userDB = require('../user_database');
+const uuid = require('uuid');
+const bcrypt = require('bcrypt-nodejs');
 const util = require('util');
 
 class AdminModel {
