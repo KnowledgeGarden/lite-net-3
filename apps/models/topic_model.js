@@ -86,7 +86,7 @@ class TopicModel {
       if (slug.startsWith('TOP')) {
         json.id = slug;
       } else {
-        json.id = 'TOP_'+slug;
+        json.id = `TOP_${slug}`;
       }
       json.userId = userId;
       json.userHandle = userHandle;
@@ -136,7 +136,7 @@ class TopicModel {
       if (predicateSlug.startsWith('TOP')) {
         json.id = predicateSlug;
       } else {
-        json.id = 'TOP_'+predicateSlug;
+        json.id = `TOP_${predicateSlug}`;
       }
       json.userId = userId;
       json.userHandle = userHandle;
@@ -144,8 +144,8 @@ class TopicModel {
       json.type = type;
       json.label = predicate;
       json.date = new Date();
-      json.source = "<a href=\"/topic/"+subjectSlug+"\">"+subject+"</a>"
-      json.target = "<a href=\"/topic/"+objectSlug+"\">"+object+"</a>"
+      json.source = `<a href="/topic/${subjectSlug}">${subject}</a>`
+      json.target = `<a href="/topic/${objectSlug}">${object}</a>`
       json.sourceId = subjectSlug;
       json.targetId = objectSlug;
       json.backlinks = [];

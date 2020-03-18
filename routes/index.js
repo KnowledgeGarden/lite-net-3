@@ -26,7 +26,7 @@ function baseData(req) {
 function validatePredicates() {
   if (!predicates) {
     let whichvocab = config.vocabulary;
-    whichvocab = "../config/vocab/"+whichvocab+"/labels";
+    whichvocab = `../config/vocab/${whichvocab}/labels`;
     predicates =  require(whichvocab);
     console.info('IndexPreds', predicates);
     console.info('IP2', predicates.terms[0]);
@@ -68,7 +68,7 @@ router.post('/signup', async (req, res, next) => {
     return res.redirect('/');
   } catch (err) {
     console.log("Index.post-2");
-    req.flash("error", "Signup Problem: "+err);
+    req.flash("error", `Signup Problem: ${err}`);
     return res.redirect('/');       
   }
 });
@@ -182,7 +182,7 @@ router.post('/postAtriple', async (req, res, next) => {
     const dat = await JournalModel.processTriple(subject, predicate, object, url, notes,
                                usrId, usr);
     console.log('BigTriple', dat);
-    return res.redirect('/journal/'+dat.id);
+    return res.redirect(`/journal/${dat.id}`);
   } catch (err) {
     console.error(err);
     req.flash("error", err);
@@ -209,7 +209,7 @@ router.post('/posttopic', async (req, res, next) => {
   if (!id && !parentId && body) {
     try {
       const data = await JournalModel.newAIR(body, url, usrId, usr);
-      return res.redirect('/journal/'+data.id);
+      return res.redirect(`/journal/${data.id}`);
     } catch (err) {
       console.error(err);
       req.flash("error", err);
@@ -218,10 +218,10 @@ router.post('/posttopic', async (req, res, next) => {
   } else if (body || url) { // NOTE ignoring parentId for now
     try {
       await JournalModel.updateTopic(id, url, body);
-      return res.redirect('/topic/'+id);
+      return res.redirect(`/topic/${id}`);
     } catch (err) {
       console.error(err);
-      return res.redirect('/topic/'+id);
+      return res.redirect(`/topic/${id}`);
     }
   } else {
     //bad post - for now
@@ -238,10 +238,10 @@ router.post('/postjournaledit', async (req, res, next) => {
   console.info('JournalEdit', id, body);
   try {
     await JournalModel.updateJournalEntry(id, body, usrId, usr);
-    return res.redirect('/journal/'+id);
+    return res.redirect(`/journal/${id}`);
   } catch (err) {
     console.error(err);
-    req.flash("Error saving edited Journal: "+id);
+    req.flash(`Error saving edited Journal: ${id}`);
     return res.redirect('/');
   }
 });
@@ -261,7 +261,7 @@ router.get('/topic/:id', helper.isPrivate, async (req, res, next) => {
     return res.render('topicview', json);
   } catch (err) {
     console.error(err);
-    req.flash("error", "Cannot find Topic: "+id);
+    req.flash("error", `Cannot find Topic: ${id}`);
     return res.redirect('/');
   }
 });
@@ -279,7 +279,7 @@ router.get('/journal/:id', helper.isPrivate, async (req, res, next) => {
     return res.render('journalview', data);
   } catch (err) {
     console.error(err);
-    req.flash("error", "Cannot find Journal: "+id);
+    req.flash("error", `Cannot find Journal: ${id}`);
     return res.redirect('/');
   }
 });
@@ -303,7 +303,7 @@ router.get('/journaledit/:id', async (req, res, next) => {
     return res.render('journal_edit_form', data);
   } catch (err) {
     console.error(err);
-    req.flash("error", "Cannot find Journal to edit: "+id);
+    req.flash("error", `Cannot find Journal to edit: ${id}`);
     return res.redirect('/');
   }
 });

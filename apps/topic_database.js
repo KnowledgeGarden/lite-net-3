@@ -4,7 +4,7 @@ const Datastore = require('nedb-promises');
 class Database {
   constructor() {
     this.db = new Datastore({ filename: './data/topics' , autoload: true });
-    console.info('Database '+this.db);
+    console.info(`Database ${this.db}`);
   }
 
   /**

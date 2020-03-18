@@ -43,7 +43,7 @@ class AdminModel {
     const json = await userDB.fetchAccount(email);
     console.log("AdminModel.authenticate-1", email, json);
     if (!json) {
-        throw new Error("No account for "+email);
+        throw new Error(`No account for ${email}`);
     }
     const success = await this.compare(password, json.pwd);
     return {success, handle: json.handle, userId: json.id};

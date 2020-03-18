@@ -33,7 +33,7 @@ class Linker {
    */
   getHref(term, slug) {
     
-    const result = "<a href=\"/topic/"+slug+"\">"+term+"</a>";
+    const result = `<a href="/topic/${slug}">${term}</a>`;
     return result;
   };
   //////////////////////////////////
@@ -61,7 +61,7 @@ class Linker {
     let result = "";
     let begin = text.indexOf("[[");
     if (begin > -1) {
-      result = text.substring(0, begin)+" ";
+      result = `${text.substring(0, begin)} `;
     }
     let end = 0;
     let term;
@@ -77,9 +77,9 @@ class Linker {
         console.info('LINKER-1', begin, end, term, text);
         term = this.cleanTerm(term);
         //ALL wikilinks are to Topics
-        slug = 'TOP_'+toSlug(term);
+        slug = `TOP_${toSlug(term)}`;
         // add href to result
-        result += this.getHref(term, slug)+" ";
+        result += `${this.getHref(term, slug)} `;
         jsonT = {};
         jsonT.label = term;
         jsonT.slug = slug;
@@ -92,7 +92,7 @@ class Linker {
           result += text.substring(end);
         } else if (begin > -1 && end < text.length) {
           //add gap from last end+2
-          result += text.substring((end), begin)+" ";
+          result += `${text.substring((end), begin)} `;
         }
       } else { // proper end not found - error condition
         throw new Error("Open Wikilink with improper or no Closing Wikilink-missing ]]");
@@ -116,12 +116,12 @@ class Linker {
    */
   setHrefs(subject, sSlug, object, oSlug, predicate, pSlug) {
     let result = "";
-    const sHref = "<a href=\"/topic/"+sSlug+"\">"+subject+"</a>";
-    const oHref = "<a href=\"/topic/"+oSlug+"\">"+object+"</a>";
-    const pHref = "<a href=\"/topic/"+pSlug+"\">"+predicate+"</a>";
-    result += sHref+" ";
-    result += pHref+" ";
-    result += " "+oHref;
+    const sHref = `<a href="/topic/${sSlug}">${subject}</a>`;
+    const oHref = `<a href="/topic/${oSlug}">${object}</a>`;
+    const pHref = `<a href="/topic/${pSlug}">${predicate}</a>`;
+    result += `${sHref} `;
+    result += `${pHref} `;
+    result += ` ${oHref}`;
     return result;
   };
   

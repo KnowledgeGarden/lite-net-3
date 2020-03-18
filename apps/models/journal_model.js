@@ -80,7 +80,7 @@ class JournalModel {
           //data is the entire journal entry
           //We want raw; for now, href the whole thing
           //TODO add an image for the href
-          resolve("<a href=\"/journal/"+jnlId+"\">"+dx.raw+"</a>");
+          resolve(`<a href="/journal/${jnlId}">${dx.raw}</a>`);
         } catch (err) {
           console.error("error", err);
           reject(err);
@@ -107,13 +107,13 @@ class JournalModel {
    */
   async processTriple(subject, predicate, object, url, notes,
                                 userId, userHandle) {
-    const uid = 'JNL_'+uuid.v4();
+    const uid = `JNL_${uuid.v4()}`;
     const json = {};
-    const subjectSlug = 'TOP_'+toSlug(subject);
-    const objectSlug = 'TOP_'+toSlug(object);
-    const predicateSlug = 'TOP_'+subjectSlug+toSlug(predicate)+objectSlug;
-    const triple = subject+" "+predicate+" "+object;
-    json.raw = subject+' '+predicate+' '+object;
+    const subjectSlug = `TOP_${toSlug(subject)}`;
+    const objectSlug = `TOP_${toSlug(object)}`;
+    const predicateSlug = `TOP_${subjectSlug}${toSlug(predicate)}${objectSlug}`;
+    const triple = `${subject} ${predicate} ${object}`;
+    json.raw = `${subject} ${predicate} ${object}`;
     json.text = linker.setHrefs(subject, subjectSlug, object, objectSlug, predicate, predicateSlug);
     json.subj = subject;
     json.pred = predicate;
@@ -135,7 +135,7 @@ class JournalModel {
       //process the topics
       TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
       TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
-      const predlabel = subject+" "+predicate+" "+object;
+      const predlabel = `${subject} ${predicate} ${object}`;
       await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
                                   object, objectSlug,
@@ -154,7 +154,7 @@ class JournalModel {
       //process the topics
       await TopicModel.processTopic(subject, subjectSlug, url, null, uid, userId, userHandle);
       await TopicModel.processTopic(object, objectSlug, url, null, uid, userId, userHandle);
-      const predlabel = subject+" "+predicate+" "+object;
+      const predlabel = `${subject} ${predicate} ${object}`;
       await TopicModel.processPredicate(predlabel, predicateSlug, predicate,
                                   subject, subjectSlug,
                                   object, objectSlug,
@@ -252,7 +252,7 @@ class JournalModel {
     console.info('NewAirJnl-1', content, url);
     const {body, topiclist} = linker.resolveWikiLinks(content);
     console.info('NewAirJnl-2', body, topiclist);
-    const uid = 'JNL_'+uuid.v4();
+    const uid = `JNL_${uuid.v4()}`;
     json.id = uid;
     json.userId = userId;
     json.userHandle = userHandle;
