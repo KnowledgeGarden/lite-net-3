@@ -166,13 +166,15 @@ class TopicModel {
     console.info("TMajax", rx);
     const docs = await topicDB.find({ label: { $regex: rx } });
     console.info('AjaxFind', docs);
-    const json = {};
-    const lx = [];
+    var json = {};
+    var lx = [];
     
-    for (const doc in docs) {
-      lx.push(doc.label);
+    for (var doc in docs) {
+      //console.info('foo', docs[doc].label);
+      lx.push(docs[doc].label);
     }
     json.options = lx;
+    //console.info('AjaxFound', lx, json.options);
     return json;
   };
 
