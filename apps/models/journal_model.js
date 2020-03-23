@@ -235,16 +235,12 @@ class JournalModel {
     console.info('ProcessTopics', topiclist, id, text);
     let json;
     let i;
-    for (i in topiclist) {
-      json = topiclist[i];
-      console.info('PT-1', json);
-      await TopicModel.processTopic(json.label, 
-                              json.slug,
-                              url,
-                              text,
-                              id, userId, userHandle
-                              );
-    }
+    const promises = topiclist.map(
+      (json)=> TopicModel.processTopic(
+        json.label, json.slug, url, text,
+        id, userId, userHandle)
+      )
+    await Promise.allSettled(promises);
   };
 
   /**
