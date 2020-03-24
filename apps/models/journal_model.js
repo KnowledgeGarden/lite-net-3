@@ -193,7 +193,8 @@ class JournalModel {
    * @param id 
    */
   async getTopic(id) {
-    const data = await topicDB.get(id);
+    const data = await TopicModel.getTopic(id);
+    console.info('JnlModel.getTopic', data);
     return await this.populateBacklinks(data);
   };
 

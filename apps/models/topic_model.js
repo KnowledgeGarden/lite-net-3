@@ -1,5 +1,6 @@
 "use strict";
 const topicDB = require('../topic_database');
+const graphModel = require('./graph_model');
 
 class TopicModel {
 
@@ -180,6 +181,13 @@ class TopicModel {
     console.info("TopicModel.listTopics", docs);
     return docs;
   };
+
+  async getTopic(topicId) {
+    const data = await topicDB.get(topicId);
+    const graph = await graphModel.fetchGraph(data);
+    data.graph = JSON.stringify(graph);
+    return data;
+  }
 
 
 }

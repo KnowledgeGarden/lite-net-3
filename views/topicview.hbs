@@ -1,3 +1,14 @@
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
+    <script type="text/javascript" src="/js/vis.js"></script>
+<script>
+    window.onload = function() {
+        var container = document.getElementById('mynetwork');
+        var options = {};
+        var data = {{{graph}}};
+        //alert('GGG', data);
+        var timeline = new vis.Network(container, data, options);
+    };
+</script>
 <style>
   #mypara {
     width: 800px; border-style: solid; border: 1px solid green;
@@ -5,6 +16,13 @@
   #mypara:hover {
     background-color: rgba(255, 255, 0, 0.801);
   }
+    #mynetwork { 
+        display:block;
+        width:inherit;
+        height:800px;
+        border:solid;
+        background-color:white;
+    }
 </style>
 
 {{#if source}}
@@ -12,37 +30,43 @@
 {{else}}
     <h2>Topic: {{label}}</h2>
 {{/if}}
-{{#if isAuthenticated}}
-    {{> air_form}}
-    <hr>
-{{/if}}
-{{#if source}}
-    <h3>Source Topic: {{{source}}}</h3>
-    <h3>Target Topic: {{{target}}}</h3>
-{{/if}}
-{{#if bodylist}}
-    <hr>
-    <h3>Body</h3>
-    <div style="overflow-y: auto; height:200px;">
-    {{#each bodylist}}
-        <div id="mypara">
-            {{{this}}}
-        </div><br/>
+<div id="mainview">
+    {{#if isAuthenticated}}
+        {{> air_form}}
+        <hr>
+    {{/if}}
+    {{#if source}}
+        <h3>Source Topic: {{{source}}}</h3>
+        <h3>Target Topic: {{{target}}}</h3>
+    {{/if}}
+    {{#if bodylist}}
+        <hr>
+        <h3>Body</h3>
+        <div style="overflow-y: auto; height:200px;">
+        {{#each bodylist}}
+            <div id="mypara">
+                {{{this}}}
+            </div><br/>
+            {{/each}}
+        </div>
+    {{/if}}
+    {{#if urllist}}
+    <h3>Resources</h3>
+        {{#each urllist}}
+            <a href="{{this}}">{{this}}</a><br/>
+        {{/each}}
+    {{/if}}
+    <h3>Backlinks</h3>
+    <div style="overflow-y: auto; height:400px;">
+        {{#each backlinks}}
+            <div id="mypara">
+                {{{this}}}
+            </div><br/>
         {{/each}}
     </div>
-{{/if}}
-{{#if urllist}}
-<h3>Resources</h3>
-    {{#each urllist}}
-        <a href="{{this}}">{{this}}</a><br/>
-    {{/each}}
-{{/if}}
-<h3>Backlinks</h3>
-<div style="overflow-y: auto; height:400px;">
-    {{#each backlinks}}
-        <div id="mypara">
-            {{{this}}}
-        </div><br/>
-    {{/each}}
+    <div style="display: none;">{{jsonSource}}</div>
 </div>
-<div style="display: none;">{{jsonSource}}</div>
+<div id="graphview">
+ 
+    <div id="mynetwork">Network Graph</div>
+</div>

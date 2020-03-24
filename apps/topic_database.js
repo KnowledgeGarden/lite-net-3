@@ -96,8 +96,16 @@ class Database {
    */
   async list() {
     return await this.db.find({}).sort({ label: 1 });
-  }
+  };
 
+  /**
+   * Return a list of relations for a given topic
+   * @param topicId
+   */
+  async listRelations(topicId) {
+    return await this.db.find({ nodeType: 'relation', $or: [{ sourceId: topicId }, { targetId: topicId }]});
+  };
+  
 };
 
 const instance = new Database();
