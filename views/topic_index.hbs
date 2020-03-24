@@ -1,0 +1,25 @@
+<script>
+  $( document ).ready(function() {
+    $('.subjectF').typeahead({
+      source: function (query, process) {
+        //alert(process);
+        return $.get('/ajax/label', { query: query }, function (data) {
+            //alert(data);
+            return process(data.options);
+        });
+      }
+    });
+  });
+</script>
+
+<h2>Topics</h2>
+<div>
+  <input class="subjectF" id="topicx" name="topic" placeholder="Topoic" type="text" style='width:15em'>
+</div>
+<div style="overflow-y: auto; height:300px;">
+  {{#each topicList}}
+    <div id="mypara">
+      <a href="/topic/{{id}}">{{label}}</a><br/>
+    </div><br/>
+  {{/each}}
+</div>

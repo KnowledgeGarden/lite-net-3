@@ -96,6 +96,14 @@ router.post('/login', async (req, res, next) => {
 //////////////////////////
 
 /**
+ * Display Topics Index
+ */
+router.get('/topics', async (req, res, next) => {
+  const data = baseData(req);
+  //TODO
+  return res.render('topic_index', data);
+});
+/**
  * Ajax for typeahead
  */
 router.get('/ajax/label', async (req, res, next) => {
