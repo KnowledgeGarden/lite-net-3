@@ -181,6 +181,14 @@ class JournalModel {
   };
 
   /**
+   * List topics
+   * TODO needs pagination
+   */
+  async listTopics() {
+    return TopicModel.listTopics();
+  };
+
+  /**
    * Return a topic identified by <code>id</code>
    * @param id 
    */

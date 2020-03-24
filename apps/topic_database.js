@@ -90,6 +90,14 @@ class Database {
     }
   };
 
+  /**
+   * Return a list of topics sorted on label
+   * //TODO add pagination
+   */
+  async list() {
+    return await this.db.find({}).sort({ label: 1 });
+  }
+
 };
 
 const instance = new Database();

@@ -100,8 +100,15 @@ router.post('/login', async (req, res, next) => {
  */
 router.get('/topics', async (req, res, next) => {
   const data = baseData(req);
-  //TODO
-  return res.render('topic_index', data);
+  try {
+    const topics = await JournalModel.listTopics();
+    data.topicList = topics;
+    return res.render('topic_index', data);
+  } catch (err) {
+    console.error(err);
+    return res.redirect('/');
+  }
+
 });
 /**
  * Ajax for typeahead

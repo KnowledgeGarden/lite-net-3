@@ -171,6 +171,17 @@ class TopicModel {
     }
   };
 
+  /**
+   * List topics
+   * TODO needs pagination
+   */
+  async listTopics() {
+    const docs = await topicDB.list();
+    console.info("TopicModel.listTopics", docs);
+    return docs;
+  };
+
+
 }
 
 const  instance = new TopicModel();
