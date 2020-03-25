@@ -14,6 +14,7 @@ class GraphModel {
     result.id = topicId;
     result.label = topiclabel;
     result.shape = "oval";
+    result.mass = 2;
     //console.info('NODE', result);
     return result;
   }
@@ -23,7 +24,7 @@ class GraphModel {
     result.from = fromId;
     result.to = toId;
     result.label = label;
-    result.arrows = 'from';
+    result.arrows = 'to';
     //console.info('EDGE', result);
     return result;
   }
