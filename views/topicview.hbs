@@ -1,7 +1,27 @@
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
-    <script type="text/javascript" src="/js/vis.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
+<script type="text/javascript" src="/js/vis.js"></script>
 <script>
+    var which = 'main';
+    function doMain() {
+        $('#graphview').hide();
+        $('#mainview').show();
+        if (which === 'graph') {
+            document.getElementById('mgb').classList.remove('btn-secondary');
+            document.getElementById('mvb').classList.add('btn-primary');
+        }
+    };
+    function doGraph() {
+        $('#graphview').show();
+        $('#mainview').hide();
+        if (which === 'graph') {
+            document.getElementById('mvb').classList.remove('btn-secondary');
+            document.getElementById('mgb').classList.add('btn-primary');
+        }
+    };
+
     window.onload = function() {
+        $('#graphview').hide();
+        $('#mainview').show();
         var container = document.getElementById('mynetwork');
         var options = {};
         var data = {{{graph}}};
@@ -30,6 +50,9 @@
 {{else}}
     <h2>Topic: {{label}}</h2>
 {{/if}}
+<button type="button" id="mvb" class="btn btn-primary" onclick="doMain()">Main View<button>
+<button type="button" id="gvb" class="btn btn-secondary" onclick="doGraph()">Graph View</button>
+
 <div id="mainview">
     {{#if isAuthenticated}}
         {{> air_form}}
