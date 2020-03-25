@@ -14,17 +14,18 @@ class GraphModel {
     result.id = topicId;
     result.label = topiclabel;
     result.shape = "oval";
-    console.info('NODE', result);
+    //console.info('NODE', result);
     return result;
   }
 
   edgeStruct(fromId, toId, label) {
-      var result = {};
-      result.from = fromId;
-      result.to = toId;
-      result.label = label;
-      console.info('EDGE', result);
-      return result;
+    var result = {};
+    result.from = fromId;
+    result.to = toId;
+    result.label = label;
+    result.arrows = 'from';
+    //console.info('EDGE', result);
+    return result;
   }
 
   ///////////////////////
@@ -63,7 +64,7 @@ class GraphModel {
     where = result.indexOf('>', where); // get second >
     result = result.substring(where+1).trim();
     result = result.substring(0, (result.length - 4));
-    console.info('EXTRACT', url, result);
+    //console.info('EXTRACT', url, result);
     return result;
   }
 
