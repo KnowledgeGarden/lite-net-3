@@ -2,21 +2,28 @@
 <script type="text/javascript" src="/js/vis.js"></script>
 <script>
     var which = 'main';
+    
     function doMain() {
         $('#graphview').hide();
         $('#mainview').show();
         if (which === 'graph') {
-            document.getElementById('mgb').classList.remove('btn-secondary');
+            document.getElementById('gvb').classList.remove('btn-primary');
+            document.getElementById('gvb').classList.add('btn-secondary');
+            document.getElementById('mvb').classList.remove('btn-secondary');
             document.getElementById('mvb').classList.add('btn-primary');
         }
+        which = 'main';
     };
     function doGraph() {
         $('#graphview').show();
         $('#mainview').hide();
-        if (which === 'graph') {
-            document.getElementById('mvb').classList.remove('btn-secondary');
-            document.getElementById('mgb').classList.add('btn-primary');
+        if (which === 'main') {
+            document.getElementById('mvb').classList.remove('btn-primary');
+            document.getElementById('mvb').classList.add('btn-secondary');
+            document.getElementById('gvb').classList.remove('btn-secondary');
+            document.getElementById('gvb').classList.add('btn-primary');
         }
+        which = 'graph';
     };
 
     window.onload = function() {
