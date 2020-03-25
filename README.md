@@ -26,5 +26,8 @@ This allows for harvesting information from the selected resource.
 ### Entering a text note
 A text note can be any text desired, including copying and pasting from other sources. This is not (yet) a _rich text_ feature.
 In any text entered, it is possible to create _Wikilinks_ by surrounding a word or phrase with "[[ ... ]]".
-### Creating a statment as a triple structure
+### Creating a statement as a triple structure
 A triple consists of three components to form a statement like _something causes something else_, which has the form {subject, predicate, object}. Type the subject word or phrase into its box, and do the same for the predicate and the object. In each case, _typeahead_ will help you find the term or predicate. There is an opportunity to add a URL and a comment. 
+
+### Viewing a Graph
+Each Topic, particularly those which are not Relations, may have a graph created by Statements. Viewing a Graph for a topic means clicking the Graph View Button on a Topic View. At this time, some small graphs tend to sit in the upper left corner, and do not center.
