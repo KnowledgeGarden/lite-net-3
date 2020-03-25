@@ -19,11 +19,10 @@ class GraphModel {
     return result;
   }
 
-  edgeStruct(fromId, toId, label) {
+  edgeStruct(fromId, toId) {
     var result = {};
     result.from = fromId;
     result.to = toId;
-    result.label = label;
     result.arrows = 'to';
     //console.info('EDGE', result);
     return result;
@@ -95,11 +94,17 @@ class GraphModel {
       var targetId;
       var targetLabel;
       var relnType;
+      var relnId;
       var node;
       var edge;
       for (var r in data) {
         reln = data[r];
+        relnId = reln.id;
         relnType = reln.type;
+        node = this.nodeStruct(relnId, relnType);
+        if (!this.nodeArrayContains(node, nodeListSet)) {
+          nodeListSet.push(node);
+        }
         sourceId = reln.sourceId;
         targetId = reln.targetId;
         sourceUrl = reln.source;
@@ -109,12 +114,16 @@ class GraphModel {
         node = this.nodeStruct(sourceId, sourceLabel);
         if (!this.nodeArrayContains(node, nodeListSet)) {
           nodeListSet.push(node);
-        }
+        } 
         node = this.nodeStruct(targetId, targetLabel);
         if (!this.nodeArrayContains(node, nodeListSet)) {
           nodeListSet.push(node);
         }
-        edge = this.edgeStruct(sourceId, targetId, relnType);
+        edge = this.edgeStruct(sourceId, relnId);
+        if (!this.edgeArrayContains(edge, edgeListSet)) {
+          edgeListSet.push(edge);
+        }
+        edge = this.edgeStruct(relnId, targetId);
         if (!this.edgeArrayContains(edge, edgeListSet)) {
           edgeListSet.push(edge);
         }
