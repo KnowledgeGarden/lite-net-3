@@ -92,10 +92,15 @@ class Database {
 
   /**
    * Return a list of topics sorted on label
-   * //TODO add pagination
+   * @param limit
+   * @param skip
    */
-  async list() {
-    return await this.db.find({}).sort({ label: 1 });
+  async list(limit, skip) {
+    console.info('TopList', limit, skip);
+
+    const result = await Promise.all([this.db.find({}).sort({ label: 1 }).limit(limit).skip(skip), this.db.count({})]);
+
+    return result;
   };
 
   /**

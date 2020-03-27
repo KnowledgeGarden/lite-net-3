@@ -63,6 +63,7 @@
     return truth; //validURL(iurl);
   }
 
+
 </script>
 <style>
   #mypara {
@@ -94,7 +95,36 @@
   <hr>
 {{/if}}
 <h3>Journal Entries</h3>
+<b>Number of Entries: {{itemCount}}</b><br>
+<ul class="pagination pagination-sm">
+  {{#if a1}}
+    <li class="active"><a href="/1">1</a></li>
+    <li> <a href="/2">2</a></li>
+  {{else if a2}}
+    <li><a href="/1">1</a></li>
+    <li class="active"> <a href="/2">2</a></li>
+    <li><a href="/3">3</a></li>
+  {{else if a3}}
+    <li><a href="/1">1</a></li>
+    <li> <a href="/2">2</a></li>
+    <li class="active"><a href="/3">3</a></li>
+    <li><a href="/4">4</a></li>
+  {{else if a4}}
+    <li><a href="/1">1</a></li>
+    <li> <a href="/2">2</a></li>
+    <li><a href="/3">3</a></li>
+    <li class="active"><a href="/4">4</a></li>
+    <li><a href="/5">5</a></li>
+  {{else}}
+    <li><a href="/1">1</a></li>
+    <li> <a href="/2">2</a></li>
+    <li><a href="/3">3</a></li>
+    <li ><a href="/4">4</a></li>
+    <li class="active"><a href="/5">5</a></li>
+  {{/if }}
 
+
+</ul>
 <div style="overflow-y: auto; height:500px;">
   {{#each noteList}}
     <div id="mypara">
@@ -103,6 +133,7 @@
     </div><br/>
   {{/each}}
 </div>
+
 
 
 

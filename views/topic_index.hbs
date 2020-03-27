@@ -13,7 +13,36 @@
 </script>
 
 <h2>Topics</h2>
+<b>Number of Topics: {{itemCount}}</b><br>
+<ul class="pagination pagination-sm">
+  {{#if a1}}
+    <li class="active"><a href="/topics/1">1</a></li>
+    <li> <a href="/topics/2">2</a></li>
+  {{else if a2}}
+    <li><a href="/topics/1">1</a></li>
+    <li class="active"> <a href="/topics/2">2</a></li>
+    <li><a href="/topics/3">3</a></li>
+  {{else if a3}}
+    <li><a href="/topics/1">1</a></li>
+    <li> <a href="/topics/2">2</a></li>
+    <li class="active"><a href="/topics/3">3</a></li>
+    <li><a href="/topics/4">4</a></li>
+  {{else if a4}}
+    <li><a href="/topics/1">1</a></li>
+    <li> <a href="/topics/2">2</a></li>
+    <li><a href="/topics/3">3</a></li>
+    <li class="active"><a href="/topics/4">4</a></li>
+    <li><a href="/topics/5">5</a></li>
+  {{else}}
+    <li><a href="/topics/1">1</a></li>
+    <li> <a href="/topics/2">2</a></li>
+    <li><a href="/topics/3">3</a></li>
+    <li ><a href="/topics/4">4</a></li>
+    <li class="active"><a href="/topics/5">5</a></li>
+  {{/if }}
+</ul>
 <div>
+  <b>Quick Autocomplete Scan: </b>
   <input class="subjectF" id="topicx" name="topic" placeholder="Type a Topic" type="text" style='width:15em'>
 </div>
 <div style="overflow-y: auto; height:500px;">

@@ -174,18 +174,20 @@ class JournalModel {
 
   /**
    * List journal entries
-   * TODO needs pagination
+   * @param limit
+   * @param skip
    */
-  async list() {
-    return await journalDB.list();
+  async list(limit, skip) {
+    return await journalDB.list(limit, skip);
   };
 
   /**
    * List topics
-   * TODO needs pagination
+   * @param limit
+   * @param skip
    */
-  async listTopics() {
-    return TopicModel.listTopics();
+  async listTopics(limit, skip) {
+    return await TopicModel.listTopics(limit, skip);
   };
 
   /**
