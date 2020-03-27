@@ -174,10 +174,11 @@ class TopicModel {
 
   /**
    * List topics
-   * TODO needs pagination
+   * @param limit
+   * @param skip
    */
-  async listTopics() {
-    const docs = await topicDB.list();
+  async listTopics(limit, skip) {
+    const docs = await topicDB.list(limit, skip);
     console.info("TopicModel.listTopics", docs);
     return docs;
   };

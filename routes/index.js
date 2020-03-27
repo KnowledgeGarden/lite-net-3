@@ -99,10 +99,36 @@ router.post('/login', async (req, res, next) => {
  * Display Topics Index
  */
 router.get('/topics', async (req, res, next) => {
+  return res.redirect('/topics/1');
+});
+
+router.get('/topics/:page', async (req, res, next) => {
+  const ql = 10;
+  const page = req.params.page || 1
+  const skp = (ql * page) - ql;
+  console.info('GETT', page, ql, skp);
+
   const data = baseData(req);
   try {
-    const topics = await JournalModel.listTopics();
+    const [ topics, itemCount ] = await JournalModel.listTopics(ql, skp);
     data.topicList = topics;
+    data.itemCount = itemCount;
+    switch (page) {
+      case '2':
+        data.a2 = true;
+        break;
+      case '3':
+        data.a3 = true;
+        break;
+      case '4':
+        data.a4 = true;
+        break;
+      case '5':
+        data.a5 = true;
+        break;
+      default:
+        data.a1 = true;
+    }
     return res.render('topic_index', data);
   } catch (err) {
     console.error(err);
@@ -125,18 +151,48 @@ router.get('/ajax/label', async (req, res, next) => {
   }
 });
 
+router.get('/', async (req, res, next) => {
+  return res.redirect('/1');
+});
+
 /* GET home page. */
-router.get('/', helper.isPrivate, async (req, res, next) => {
+router.get('/:page', helper.isPrivate, async (req, res, next) => {
   validatePredicates();
+  const ql = 10;
+  const page = req.params.page || 1
+  const skp = (ql * page) - ql;
+  console.info('GETX', page, ql, skp);
   try {
-    const noteList = await JournalModel.list();
+    const [ noteList, itemCount ] = await JournalModel.list(ql, skp);
+    const pageCount = Math.ceil(itemCount / ql);
+    console.info('GETY', noteList.length, itemCount, pageCount);
+
     const data = baseData(req);
+
     data.predicates = predicates;
     console.info('IP3', predicates.terms[0]);
     if (req.flash) {
       data.flashMsg = req.flash("error") || req.flash("success");
     }
     data.noteList = noteList;
+    data.itemCount = itemCount;
+    switch (page) {
+      case '2':
+        data.a2 = true;
+        break;
+      case '3':
+        data.a3 = true;
+        break;
+      case '4':
+        data.a4 = true;
+        break;
+      case '5':
+        data.a5 = true;
+        break;
+      default:
+        data.a1 = true;
+    }
+   // console.info("GETTING", page);
     return res.render('index', data);
   } catch (err) {
     console.error(err);

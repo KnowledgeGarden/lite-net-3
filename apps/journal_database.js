@@ -25,9 +25,14 @@ class Database {
 
   /**
    * Return a list of journal entries sorted on date latest on top
+   * @param limit
+   * @param skip
    */
-  async list() {
-    return await this.db.find({}).sort({ date: -1 });
+  async list(limit, skip) {
+    console.info('JnlList', limit, skip);
+    const result = await Promise.all([this.db.find({}).sort({ date: -1 }).limit(limit).skip(skip), this.db.count({})]);
+    //console.info('JnlList-1', result);
+    return result;
   }
 
     /**

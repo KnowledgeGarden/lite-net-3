@@ -6,7 +6,6 @@ const logger = require('morgan');
 const flash = require("connect-flash");
 const session = require("express-session");
 const uuid = require('uuid');
-
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
@@ -34,6 +33,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
