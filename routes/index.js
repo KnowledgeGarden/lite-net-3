@@ -230,15 +230,6 @@ router.get('/new_note_route', (req, res, next) => {
   return res.render('index', data);
 });
 
-/**
- * Get page identified by its slug
- * /
-router.get('/:id', helper.isPrivate, function(req, res, next) {
-  var id = req.params.id;
-  var data = baseData(req);
-  data.id = id;
-  return res.render('index', data);
-});*/
 
 router.post('/postAtriple', async (req, res, next) => {
   const subject = req.body.subject;
@@ -330,6 +321,15 @@ router.get('/topic/:id', helper.isPrivate, async (req, res, next) => {
     json.isAuthenticated = helper.isAuthenticated(req);
 
     json.jsonSource = JSON.stringify(data);
+    //check for graph
+    var g = json.graph;
+    if (g) {
+      g = JSON.parse(g);
+    }
+    if (g && g.nodes && g.nodes.length > 0) {
+      json.hasGraph = true;
+    }
+    console.info('TOPV', g.nodes, json.hasGraph);
     return res.render('topicview', json);
   } catch (err) {
     console.error(err);
