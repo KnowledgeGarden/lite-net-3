@@ -103,7 +103,7 @@ router.get('/topics', async (req, res, next) => {
 });
 
 router.get('/topics/:page', async (req, res, next) => {
-  const ql = 10;
+  const ql = 50;
   const page = req.params.page || 1
   const skp = (ql * page) - ql;
   console.info('GETT', page, ql, skp);
@@ -158,7 +158,7 @@ router.get('/', async (req, res, next) => {
 /* GET home page. */
 router.get('/:page', helper.isPrivate, async (req, res, next) => {
   validatePredicates();
-  const ql = 10;
+  const ql = 50;
   const page = req.params.page || 1
   const skp = (ql * page) - ql;
   console.info('GETX', page, ql, skp);
