@@ -5,7 +5,10 @@ const slugify = require('slugify');
 function toSlug(term) {
   // by making it lower case, we trap the same term
   // no matter whether caps are involved.
-  const tx = term.toLowerCase();
+  var re = new RegExp("'", "g"); // remove apostrophies from text
+  const tx = term.trim()
+            .toLowerCase()
+            .replace(re, "_");
   return slugify(tx, '_');
 };
 
